@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Jh2Pdf — exemplos</title>
+<link rel="icon" type="image/png" href="../assets/favicon.png">
 <link rel="stylesheet" href="fonts.css">
 <link rel="stylesheet" href="../resources/marks.css">
 <link rel="stylesheet" href="pages.css">
@@ -16,7 +17,8 @@
   .top { position: sticky; top: 0; z-index: 10; display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
          padding: 14px 28px; background: rgba(255,255,255,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
   .brand { display: flex; align-items: center; gap: 10px; font: 700 20px 'Montserrat'; }
-  .brand i { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(#22d3ee, #4f46e5); }
+  .brand { color: inherit; text-decoration: none; }
+  .brand img { height: 30px; width: auto; }
   .top nav { margin-left: auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
   .btn { appearance: none; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 10px; padding: 8px 14px;
          font: 600 13.5px 'DM Sans'; cursor: pointer; text-decoration: none; display: inline-flex; gap: 6px; align-items: center; }
@@ -57,7 +59,7 @@
 <body>
 
 <header class="top">
-  <div class="brand"><i></i> Jh2Pdf</div>
+  <a class="brand" href="../"><img src="../assets/logo-mark.png" alt=""> Jh2Pdf</a>
   <nav>
     <span class="langs"><a href="index.html" hreflang="en">EN</a><b>PT</b><a href="es.html" hreflang="es">ES</a></span>
     <a class="btn" href="../docs/pt-BR.html">Documentação</a>

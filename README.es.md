@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/logo.png" alt="Jh2pdf — JavaScript HTML 2 PDF" width="340"></p>
+
 # Jh2Pdf
 
 [English](README.md) · [Português](README.pt-BR.md) · **Español**
@@ -226,6 +228,7 @@ Son buenas contribuciones: cada una se convierte en una operación nueva en el J
 ```
 jh2pdf/
 ├── LICENSE               MIT
+├── assets/               logo, icono y favicon (logo-original.png es el original)
 ├── README.md             en inglés + README.pt-BR.md y README.es.md (este)
 ├── composer.json         paquete Composer (autoload PSR-4: Jh2Pdf\ → src/)
 ├── autoload.php          autoloader para quien no usa Composer

@@ -4,13 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Jh2Pdf</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="stylesheet" href="demo/fonts.css">
 <style>
   * { box-sizing: border-box; }
   body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; background: #f1f2f7; color: #161827; font: 16px/1.6 'DM Sans', system-ui, sans-serif; }
   .wrap { max-width: 760px; width: 100%; }
-  .brand { display: flex; align-items: center; gap: 12px; font: 700 34px 'Montserrat'; }
-  .brand i { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(#22d3ee, #4f46e5); }
+  .brand { margin: 0; }
+  .brand img { display: block; width: 340px; max-width: 100%; height: auto; }
   p.lead { font-size: 18px; color: #5d6378; margin: 10px 0 26px; }
   .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
   a.card { display: block; background: #fff; border: 1px solid #e2e4ec; border-radius: 16px; padding: 20px 22px; color: inherit; text-decoration: none; }
@@ -27,7 +28,7 @@
 <body>
 <div class="wrap">
   <div class="langs"><b>English</b><a href="index.pt-BR.html" hreflang="pt-BR">Português</a><a href="index.es.html" hreflang="es">Español</a></div>
-  <div class="brand"><i></i> Jh2Pdf</div>
+  <h1 class="brand"><img src="assets/logo.png" alt="Jh2pdf — JavaScript HTML 2 PDF" width="340" height="280"></h1>
   <p class="lead">Pixel-perfect HTML to PDF, without a browser on the server. The browser measures the layout; PHP only draws the PDF. No headless Chrome, runs on shared hosting.</p>
   <div class="cards">
     <a class="card" href="demo/"><b>Examples gallery →</b><span>Tables, gradients, shadows, filtered images, lists, hand-drawn marks and an invoice, with the generated PDF.</span></a>
