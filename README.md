@@ -1,4 +1,5 @@
 <p align="center"><img src="assets/logo.png" alt="Jh2pdf — JavaScript HTML 2 PDF" width="340"></p>
+<p align="center"><a href="https://geisonq.github.io/jh2pdf/"><b>Visit the website: geisonq.github.io/jh2pdf</b></a></p>
 
 # Jh2Pdf
 
@@ -6,7 +7,7 @@
 
 **Pixel-perfect HTML to PDF, without a browser on the server.** No headless Chrome, no Puppeteer, no wkhtmltopdf. Runs on shared hosting (just PHP + GD).
 
-📖 **[Full documentation](docs/index.html)** · 🎨 **[Examples gallery](demo/index.html)** (tables, gradients, shadows, filtered images, lists, an invoice) · 📄 [MIT license](LICENSE)
+📖 **[Full documentation](https://geisonq.github.io/jh2pdf/docs/)** · 🎨 **[Examples gallery](https://geisonq.github.io/jh2pdf/demo/)** (tables, gradients, shadows, filtered images, lists, an invoice) · 📄 [MIT license](LICENSE)
 
 ## Why it exists
 
@@ -69,10 +70,10 @@ const pdf = await res.blob();                                       // applicati
 
 Your page's CSS already applies: the module renders each page in an off-screen container inside your own document.
 
-**2. Server:** `composer require dompdf/dompdf`, then:
+**2. Server:** `composer require geisonq/jh2pdf` (installs Dompdf too), then:
 
 ```php
-require 'Jh2Pdf/autoload.php';       // or: composer require jh2pdf/jh2pdf
+require 'vendor/autoload.php';       // without Composer: require 'jh2pdf/autoload.php' + Dompdf
 
 $layout = json_decode(file_get_contents('php://input'), true);
 
@@ -211,7 +212,7 @@ against **the exporter's browser** (classic XSS: `<img onerror=…>`). Defenses:
 
 ## What is not drawn (yet)
 
-It handles documents, reports, tables and slides well (see the [gallery](demo/index.html)). Today these do **not** come out identical in the PDF:
+It handles documents, reports, tables and slides well (see the [gallery](https://geisonq.github.io/jh2pdf/demo/)). Today these do **not** come out identical in the PDF:
 
 - blurred `box-shadow` (unblurred ones, inset or outer, are drawn), `text-shadow`, `background-image: url()`, `transform`, `clip-path`, inline SVG/`<canvas>`;
 - `linear-gradient` comes out vertical or horizontal (diagonals snap to the nearest direction); `radial-gradient`, repeating or layered gradients don't;
@@ -221,7 +222,7 @@ It handles documents, reports, tables and slides well (see the [gallery](demo/in
 - weights outside 400–700 (rounded to the nearest);
 - automatic pagination: each item in `pages` is one page; anything taller is cut off.
 
-These make good contributions: each one becomes a new operation in the JSON (see [Contributing](#contributing)). The full table is in [docs › Supported CSS](docs/index.html#css).
+These make good contributions: each one becomes a new operation in the JSON (see [Contributing](#contributing)). The full table is in [docs › Supported CSS](https://geisonq.github.io/jh2pdf/docs/#css).
 
 ## Structure
 
@@ -257,7 +258,7 @@ jh2pdf/
 ## License and credits
 
 - **Code:** [MIT license](LICENSE), © 2026 Geison Quevedo. Use, modify and sell it freely, including in closed-source projects, as long as you keep the copyright notice and the license text.
-- **Dompdf** (LGPL-2.1) and its dependencies (php-font-lib LGPL-2.1+, php-svg-lib LGPL-3.0+, masterminds/html5 MIT, php-css-parser MIT) are installed by Composer and used as an unmodified library. Details in [docs › Dependencies](docs/index.html#dependencies).
+- **Dompdf** (LGPL-2.1) and its dependencies (php-font-lib LGPL-2.1+, php-svg-lib LGPL-3.0+, masterminds/html5 MIT, php-css-parser MIT) are installed by Composer and used as an unmodified library. Details in [docs › Dependencies](https://geisonq.github.io/jh2pdf/docs/#dependencies).
 - **Fonts** in `fonts/`: SIL Open Font License 1.1 (© their respective authors; static instances generated from the original variable fonts).
   Notices and license text in `fonts/OFL.txt`. Lora, Merriweather, Playfair Display and Source Serif 4 have a Reserved Font Name (RFN), so their static
   instances ship renamed as Jh Serif, Jh Serif Text, Jh Display and Jh Serif Book. If you generate new instances of RFN fonts, rename them too.

@@ -1,4 +1,5 @@
 <p align="center"><img src="assets/logo.png" alt="Jh2pdf — JavaScript HTML 2 PDF" width="340"></p>
+<p align="center"><a href="https://geisonq.github.io/jh2pdf/"><b>Visita el sitio: geisonq.github.io/jh2pdf</b></a></p>
 
 # Jh2Pdf
 
@@ -6,7 +7,7 @@
 
 **HTML a PDF idéntico al navegador, sin navegador en el servidor.** Sin Chrome headless, sin Puppeteer, sin wkhtmltopdf. Funciona en hosting compartido (solo PHP + GD).
 
-📖 **[Documentación completa](docs/es.html)** · 🎨 **[Galería de ejemplos](demo/es.html)** (tablas, degradados, sombras, imágenes con filtros, listas, una factura) · 📄 [Licencia MIT](LICENSE)
+📖 **[Documentación completa](https://geisonq.github.io/jh2pdf/docs/es.html)** · 🎨 **[Galería de ejemplos](https://geisonq.github.io/jh2pdf/demo/es.html)** (tablas, degradados, sombras, imágenes con filtros, listas, una factura) · 📄 [Licencia MIT](LICENSE)
 
 ## Por qué existe
 
@@ -69,10 +70,10 @@ const pdf = await res.blob();                                       // applicati
 
 El CSS de tu página ya se aplica: el módulo dibuja cada página en un contenedor fuera de la pantalla, dentro de tu propio documento.
 
-**2. Servidor:** `composer require dompdf/dompdf` y:
+**2. Servidor:** `composer require geisonq/jh2pdf` (también instala Dompdf) y:
 
 ```php
-require 'Jh2Pdf/autoload.php';       // o: composer require jh2pdf/jh2pdf
+require 'vendor/autoload.php';       // sin Composer: require 'jh2pdf/autoload.php' + Dompdf
 
 $layout = json_decode(file_get_contents('php://input'), true);
 
@@ -211,7 +212,7 @@ contra **el navegador de quien exporta** (XSS clásico: `<img onerror=…>`). De
 
 ## Lo que (todavía) no se dibuja
 
-Funciona bien para documentos, informes, tablas y diapositivas (ver la [galería](demo/es.html)). Hoy **no** salen iguales en el PDF:
+Funciona bien para documentos, informes, tablas y diapositivas (ver la [galería](https://geisonq.github.io/jh2pdf/demo/es.html)). Hoy **no** salen iguales en el PDF:
 
 - `box-shadow` con desenfoque (sin desenfoque, interior o exterior, sí se dibuja), `text-shadow`, `background-image: url()`, `transform`, `clip-path`, SVG/`<canvas>` en línea;
 - `linear-gradient` sale vertical u horizontal (los diagonales se ajustan a la dirección más cercana); `radial-gradient` y los degradados repetidos o en capas, no;
@@ -221,7 +222,7 @@ Funciona bien para documentos, informes, tablas y diapositivas (ver la [galería
 - pesos fuera de 400–700 (se redondean al más cercano);
 - paginación automática: cada elemento de `pages` es una página; lo que exceda la altura se corta.
 
-Son buenas contribuciones: cada una se convierte en una operación nueva en el JSON (ver [Cómo contribuir](#cómo-contribuir)). La tabla completa está en [docs › CSS soportado](docs/es.html#css).
+Son buenas contribuciones: cada una se convierte en una operación nueva en el JSON (ver [Cómo contribuir](#cómo-contribuir)). La tabla completa está en [docs › CSS soportado](https://geisonq.github.io/jh2pdf/docs/es.html#css).
 
 ## Estructura
 
@@ -257,7 +258,7 @@ jh2pdf/
 ## Licencia y créditos
 
 - **Código:** [licencia MIT](LICENSE), © 2026 Geison Quevedo. Úsalo, modifícalo y véndelo libremente, incluso en proyectos cerrados, manteniendo el aviso de copyright y el texto de la licencia.
-- **Dompdf** (LGPL-2.1) y sus dependencias (php-font-lib LGPL-2.1+, php-svg-lib LGPL-3.0+, masterminds/html5 MIT, php-css-parser MIT) se instalan con Composer y se usan como biblioteca, sin modificaciones. Detalles en [docs › Dependencias](docs/es.html#dependencies).
+- **Dompdf** (LGPL-2.1) y sus dependencias (php-font-lib LGPL-2.1+, php-svg-lib LGPL-3.0+, masterminds/html5 MIT, php-css-parser MIT) se instalan con Composer y se usan como biblioteca, sin modificaciones. Detalles en [docs › Dependencias](https://geisonq.github.io/jh2pdf/docs/es.html#dependencies).
 - **Fuentes** en `fonts/`: SIL Open Font License 1.1 (© de sus respectivos autores; instancias estáticas generadas a partir de las fuentes variables originales).
   Avisos y texto de la licencia en `fonts/OFL.txt`. Lora, Merriweather, Playfair Display y Source Serif 4 tienen nombre reservado (RFN), por eso sus instancias
   estáticas vienen renombradas como Jh Serif, Jh Serif Text, Jh Display y Jh Serif Book. Si generas instancias nuevas de fuentes con RFN, renómbralas también.

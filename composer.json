@@ -1,20 +1,29 @@
 {
-    "name": "jh2pdf/jh2pdf",
-    "description": "HTML para PDF sem navegador no servidor: o navegador de quem exporta mede o layout, o PHP só desenha o PDF.",
+    "name": "geisonq/jh2pdf",
+    "description": "Pixel-perfect HTML to PDF in PHP without a browser on the server: the user's browser measures the layout, PHP only draws the PDF. No headless Chrome, runs on shared hosting.",
     "type": "library",
     "keywords": [
         "pdf",
         "html-to-pdf",
+        "pdf-generation",
         "dompdf",
-        "layout",
+        "puppeteer-alternative",
+        "wkhtmltopdf-alternative",
         "shared-hosting"
     ],
+    "homepage": "https://geisonq.github.io/jh2pdf/",
     "license": "MIT",
     "authors": [
         {
-            "name": "Geison Quevedo"
+            "name": "Geison Quevedo",
+            "homepage": "https://github.com/geisonq"
         }
     ],
+    "support": {
+        "issues": "https://github.com/geisonq/jh2pdf/issues",
+        "source": "https://github.com/geisonq/jh2pdf",
+        "docs": "https://geisonq.github.io/jh2pdf/docs/"
+    },
     "require": {
         "php": ">=8.1",
         "ext-gd": "*",

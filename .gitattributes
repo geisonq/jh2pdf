@@ -2,3 +2,17 @@
 *.ttf binary
 *.pdf binary
 *.png binary
+
+# Fora do pacote do Composer (dist): site, galeria, documentação e testes ficam só no repositório
+/.gitattributes   export-ignore
+/.gitignore       export-ignore
+/.nojekyll        export-ignore
+/assets           export-ignore
+/demo             export-ignore
+/docs             export-ignore
+/examples         export-ignore
+/tests            export-ignore
+/tools            export-ignore
+/index.html       export-ignore
+/index.pt-BR.html export-ignore
+/index.es.html    export-ignore

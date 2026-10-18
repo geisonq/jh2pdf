@@ -1,4 +1,5 @@
 <p align="center"><img src="assets/logo.png" alt="Jh2pdf — JavaScript HTML 2 PDF" width="340"></p>
+<p align="center"><a href="https://geisonq.github.io/jh2pdf/"><b>Acesse o site: geisonq.github.io/jh2pdf</b></a></p>
 
 # Jh2Pdf
 
@@ -6,7 +7,7 @@
 
 **HTML para PDF fiel ao navegador, sem navegador no servidor.** Funciona em hospedagem compartilhada (só PHP + GD).
 
-📖 **[Documentação completa](docs/pt-BR.html)** · 🎨 **[Galeria de exemplos](demo/pt-BR.html)** (tabelas, degradês, sombras, imagens com filtros, listas, fatura) · 📄 [Licença MIT](LICENSE)
+📖 **[Documentação completa](https://geisonq.github.io/jh2pdf/docs/pt-BR.html)** · 🎨 **[Galeria de exemplos](https://geisonq.github.io/jh2pdf/demo/pt-BR.html)** (tabelas, degradês, sombras, imagens com filtros, listas, fatura) · 📄 [Licença MIT](LICENSE)
 
 ## Por que existe
 
@@ -69,10 +70,10 @@ const pdf = await res.blob();                                       // applicati
 
 O CSS da sua página já vale: o módulo desenha cada página num contêiner fora da tela, dentro do seu documento.
 
-**2. Servidor** — `composer require dompdf/dompdf` e:
+**2. Servidor** — `composer require geisonq/jh2pdf` (já instala o Dompdf) e:
 
 ```php
-require 'Jh2Pdf/autoload.php';       // ou: composer require jh2pdf/jh2pdf
+require 'vendor/autoload.php';       // sem Composer: require 'jh2pdf/autoload.php' + o Dompdf
 
 $layout = json_decode(file_get_contents('php://input'), true);
 
@@ -211,7 +212,7 @@ contra o **navegador do exportador** (XSS clássico: `<img onerror=…>`). Defes
 
 ## O que (ainda) não é desenhado
 
-Cobre bem documentos, relatórios, tabelas e slides (veja a [galeria](demo/pt-BR.html)). Hoje **não** saem iguais no PDF:
+Cobre bem documentos, relatórios, tabelas e slides (veja a [galeria](https://geisonq.github.io/jh2pdf/demo/pt-BR.html)). Hoje **não** saem iguais no PDF:
 
 - `box-shadow` desfocado (o sem desfoque, interno ou externo, é desenhado), `text-shadow`, `background-image: url()`, `transform`, `clip-path`, SVG/`<canvas>` inline;
 - `linear-gradient` sai na vertical ou na horizontal (diagonais viram a direção mais próxima); `radial-gradient`, degradês repetidos ou em camadas, não;
@@ -221,7 +222,7 @@ Cobre bem documentos, relatórios, tabelas e slides (veja a [galeria](demo/pt-BR
 - peso fora de 400–700 (é arredondado para o mais próximo);
 - paginação automática: cada item de `pages` é uma página; o que passar da altura é cortado.
 
-São boas contribuições — cada item vira uma operação nova no JSON (veja [Contribuindo](#contribuindo)). A tabela completa está em [docs › CSS suportado](docs/pt-BR.html#css).
+São boas contribuições — cada item vira uma operação nova no JSON (veja [Contribuindo](#contribuindo)). A tabela completa está em [docs › CSS suportado](https://geisonq.github.io/jh2pdf/docs/pt-BR.html#css).
 
 ## Estrutura
 
@@ -257,7 +258,7 @@ jh2pdf/
 ## Licença e créditos
 
 - **Código:** [licença MIT](LICENSE) — © 2026 Geison Quevedo. Use, modifique e venda à vontade, inclusive em projetos fechados, mantendo o aviso de copyright e o texto da licença.
-- **Dompdf** (LGPL-2.1) e suas dependências (php-font-lib LGPL-2.1+, php-svg-lib LGPL-3.0+, masterminds/html5 MIT, php-css-parser MIT) são instalados pelo Composer e usados como biblioteca, sem alteração. Detalhes em [docs › Dependências](docs/pt-BR.html#dependencies).
+- **Dompdf** (LGPL-2.1) e suas dependências (php-font-lib LGPL-2.1+, php-svg-lib LGPL-3.0+, masterminds/html5 MIT, php-css-parser MIT) são instalados pelo Composer e usados como biblioteca, sem alteração. Detalhes em [docs › Dependências](https://geisonq.github.io/jh2pdf/docs/pt-BR.html#dependencies).
 - **Fontes** em `fonts/`: SIL Open Font License 1.1 (© dos respectivos autores; instâncias estáticas geradas das fontes variáveis originais).
   Avisos e texto da licença em `fonts/OFL.txt`. Lora, Merriweather, Playfair Display e Source Serif 4 têm nome reservado (RFN), por isso as instâncias
   estáticas vêm renomeadas como Jh Serif, Jh Serif Text, Jh Display e Jh Serif Book. Se gerar instâncias novas de fontes com RFN, renomeie-as também.
