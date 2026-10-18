@@ -1,0 +1,208 @@
+/*
+ * CSS das PÁGINAS dos exemplos. Vale na prévia da tela e no contêiner fora da tela onde o Jh2Pdf mede o layout,
+ * por isso tudo é escopado em `.page` e não depende de quem está em volta (nada herdado do <body> da aplicação).
+ * Página A4 retrato: 794 × 1123 px CSS = 595 × 842 pt no PDF.
+ */
+.page {
+  --ink: #1f2430; --muted: #6b7280; --line: #e5e7ee; --soft: #f5f6fa;
+  --brand: #4f46e5; --brand-2: #06b6d4; --accent: #f97316; --ok: #16a34a; --warn: #d97706; --bad: #dc2626;
+  position: relative; width: 794px; height: 1123px; overflow: hidden;
+  padding: 56px 60px 90px; background: #ffffff; color: var(--ink);
+  font: 400 13.5px/1.6 'DM Sans', sans-serif; text-align: left; letter-spacing: normal;
+}
+.page, .page * { box-sizing: border-box; }
+.page h1, .page h2, .page h3, .page h4, .page p, .page ul, .page ol, .page table, .page blockquote, .page figure { margin: 0; }
+.page p + p { margin-top: 10px; }
+
+/* cabeçalho e rodapé de cada página */
+.page .eyebrow { font: 600 11px/1 'Montserrat'; letter-spacing: .18em; text-transform: uppercase; color: var(--brand); }
+.page .ptitle { font: 700 34px/1.15 'Jh Display'; margin: 10px 0 6px; color: #11142a; }
+.page .lead { font-size: 15px; color: var(--muted); max-width: 600px; }
+.page .pfoot {
+  position: absolute; left: 60px; right: 60px; bottom: 34px; display: flex; justify-content: space-between;
+  padding-top: 10px; border-top: 1px solid var(--line); font-size: 10.5px; color: #8a90a0;
+}
+.page .pfoot b { font-weight: 600; color: var(--brand); }
+.page .sec { font: 600 17px/1.3 'Jh Serif'; margin: 22px 0 10px; color: #11142a; }
+.page .sec small { font: 400 11.5px 'DM Sans'; color: var(--muted); margin-left: 8px; }
+
+/* ── 1. capa e tipografia ── */
+.page .hero {
+  margin: -56px -60px 26px; padding: 46px 60px 36px; color: #fff;
+  background: linear-gradient(to right, #312e81, #4f46e5 55%, #06b6d4);
+}
+.page .hero .eyebrow { color: #c7d2fe; }
+.page .hero h1 { font: 700 40px/1.08 'Jh Display'; margin: 12px 0 10px; }
+.page .hero p { font-size: 15.5px; color: #e0e7ff; max-width: 560px; }
+.page .hero .by { margin-top: 22px; display: flex; gap: 10px; align-items: center; font-size: 12px; color: #c7d2fe; }
+.page .hero .by span { background: rgba(255, 255, 255, .16); border-radius: 999px; padding: 3px 12px; color: #fff; }
+.page .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+.page .styles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 18px; margin-top: 4px; font-size: 13px; }
+.page .styles div { padding: 6px 12px; background: var(--soft); border-radius: 8px; }
+.page .up { text-transform: uppercase; letter-spacing: .14em; font-size: 11px; font-weight: 600; }
+.page .mono { font-family: 'JetBrains Mono'; font-size: 12px; background: #eef0ff; color: #3730a3; padding: 1px 6px; border-radius: 4px; }
+.page blockquote {
+  margin-top: 14px; padding: 12px 20px; border-left: 4px solid var(--accent); background: #fff7ed; border-radius: 0 10px 10px 0;
+  font: italic 400 15px/1.55 'Jh Serif'; color: #7c2d12;
+}
+.page blockquote cite { display: block; margin-top: 6px; font: normal 600 11px 'DM Sans'; color: #c2410c; letter-spacing: .08em; text-transform: uppercase; }
+.page .fonts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.page .fonts div { border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; font-size: 16px; line-height: 1.3; }
+.page .fonts small { display: block; font: 400 10px 'DM Sans'; color: var(--muted); letter-spacing: .04em; }
+
+/* ── 2. tabelas: relatório ── */
+.page .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 22px; }
+.page .kpi { border-radius: 12px; padding: 14px 16px; background: var(--soft); border: 1px solid var(--line); }
+.page .kpi b { display: block; font: 700 22px/1.2 'Montserrat'; color: #11142a; }
+.page .kpi span { font-size: 11px; color: var(--muted); }
+.page .kpi i { font-style: normal; font-size: 11px; font-weight: 600; }
+.page .kpi .up-ok { color: var(--ok); } .page .kpi .down { color: var(--bad); }
+.page .kpi.dark { background: linear-gradient(#1e1b4b, #312e81); border-color: #1e1b4b; }
+.page .kpi.dark b { color: #fff; } .page .kpi.dark span { color: #c7d2fe; }
+
+.page .tbl-wrap { border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+.page table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.page .t1 thead th {
+  background: linear-gradient(to right, #4f46e5, #06b6d4); color: #fff; text-align: left;
+  font: 600 11px 'Montserrat'; letter-spacing: .08em; text-transform: uppercase; padding: 11px 14px;
+}
+.page .t1 td { padding: 9px 14px; border-top: 1px solid var(--line); }
+.page .t1 tbody tr:nth-child(even) td { background: #f8f9fc; }
+.page .t1 .num { text-align: right; font-variant-numeric: tabular-nums; }
+.page .t1 tfoot td { font-weight: 700; background: #eef0ff; border-top: 2px solid var(--brand); color: #1e1b4b; }
+.page .pill { display: inline-block; border-radius: 999px; padding: 1px 10px; font-size: 11px; font-weight: 600; }
+.page .pill.ok { background: #dcfce7; color: #166534; }
+.page .pill.warn { background: #fef3c7; color: #92400e; }
+.page .pill.bad { background: #fee2e2; color: #991b1b; }
+.page .bar { height: 7px; border-radius: 99px; background: #e5e7ee; overflow: hidden; width: 110px; }
+.page .bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(to right, #06b6d4, #4f46e5); }
+
+.page .t2 { font-size: 12px; }
+.page .t2 th, .page .t2 td { border: 1px solid #cfd3de; padding: 5px 10px; text-align: center; }
+.page .t2 thead th { background: #11142a; color: #fff; font-weight: 600; border-color: #11142a; }
+.page .t2 thead tr + tr th { background: #2b2f4a; font-weight: 500; font-size: 11px; border-color: #2b2f4a; }
+.page .t2 tbody th { background: var(--soft); text-align: left; font-weight: 600; }
+.page .t2 .hl { background: #fff7ed; font-weight: 700; color: #9a3412; }
+.page .t2 .grp { background: #eef0ff; color: #3730a3; font-weight: 700; text-align: left; letter-spacing: .04em; }
+
+/* ── 3. tabelas: planos e comparativo ── */
+.page .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 26px; align-items: start; }
+.page .plan { border: 2px solid #11142a; border-radius: 14px; background: #fff; box-shadow: 6px 6px 0 #11142a; overflow: hidden; }
+.page .plan header { padding: 16px 18px 14px; background: var(--soft); border-bottom: 2px solid #11142a; }
+.page .plan header h3 { font: 700 16px 'Montserrat'; }
+.page .plan header p { font-size: 11.5px; color: var(--muted); }
+.page .plan .price { padding: 14px 18px 4px; font: 700 30px/1 'Montserrat'; }
+.page .plan .price small { font: 400 12px 'DM Sans'; color: var(--muted); }
+.page .plan ul { list-style: none; padding: 8px 18px 18px; font-size: 12px; }
+.page .plan li { position: relative; padding: 4px 0 4px 18px; border-bottom: 1px solid var(--line); }
+.page .plan li::before { content: ''; position: absolute; left: 0; top: 50%; width: 8px; height: 8px; margin-top: -4px; border-radius: 50%; background: var(--brand); }
+.page .plan.best { border-color: var(--accent); box-shadow: 6px 6px 0 var(--accent); }
+.page .plan.best header { background: linear-gradient(#fb923c, #f97316); color: #fff; border-color: var(--accent); }
+.page .plan.best header p { color: #ffedd5; }
+.page .plan.best li::before { background: var(--accent); }
+.page .badge { float: right; background: #11142a; color: #fff; font: 600 9.5px 'Montserrat'; letter-spacing: .12em; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; }
+
+.page .t3 th, .page .t3 td { padding: 9px 12px; border-bottom: 1px solid var(--line); }
+.page .t3 thead th { text-align: center; font: 600 11.5px 'Montserrat'; color: #11142a; border-bottom: 2px solid #11142a; }
+.page .t3 thead th:first-child, .page .t3 tbody th { text-align: left; font-weight: 500; }
+.page .t3 td { text-align: center; }
+.page .t3 td.col-best { background: #fff7ed; }
+.page .t3 thead th.col-best { background: #f97316; color: #fff; border-radius: 8px 8px 0 0; border-bottom-color: #f97316; }
+.page .yes, .page .no { position: relative; display: inline-block; width: 18px; height: 18px; border-radius: 50%; vertical-align: middle; }
+.page .yes { background: #dcfce7; } .page .no { background: #f3f4f6; }
+.page .yes::after { content: ''; position: absolute; left: 6px; top: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
+.page .no::after { content: ''; position: absolute; left: 5px; top: 8px; width: 8px; height: 2px; border-radius: 1px; background: #9ca3af; }
+
+/* ── 4. caixas e efeitos ── */
+.page .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.page .tile { height: 100px; border-radius: 14px; padding: 14px 16px; color: #fff; display: flex; flex-direction: column; justify-content: flex-end; }
+.page .tile b { font: 700 14px 'Montserrat'; }
+.page .tile span { font: 400 10.5px 'JetBrains Mono'; opacity: .85; }
+.page .g1 { background: linear-gradient(#a855f7, #4f46e5); }
+.page .g2 { background: linear-gradient(to right, #f97316, #ec4899); }
+.page .g3 { background: linear-gradient(to right, #0ea5e9, #22c55e 50%, #eab308); }
+.page .g4 { background: linear-gradient(#ffffff, #e0e7ff); color: #312e81; border: 1px solid #c7d2fe; }
+.page .g5 { background: #0f172a; border-radius: 4px 40px 4px 40px; }
+.page .g6 { background: #fff; color: #11142a; border: 3px solid #11142a; border-radius: 0; box-shadow: 8px 8px 0 #22d3ee, 16px 16px 0 #11142a; }
+.page .g6 span, .page .g4 span { opacity: .7; }
+.page .shapes { display: flex; gap: 16px; align-items: center; margin-top: 4px; }
+.page .shape { width: 70px; height: 70px; background: var(--brand); }
+.page .s-circle { border-radius: 50%; background: linear-gradient(#22d3ee, #0891b2); }
+.page .s-pill { width: 130px; height: 40px; border-radius: 99px; background: var(--accent); }
+.page .s-leaf { border-radius: 0 50% 0 50%; background: #16a34a; }
+.page .s-ring { position: relative; border-radius: 50%; background: #ec4899; }
+.page .s-ring::after { content: ''; position: absolute; left: 12px; top: 12px; width: 46px; height: 46px; border-radius: 50%; background: #fff; }
+.page .s-sides { background: #fff; border-style: solid; border-color: #ef4444 #f59e0b #22c55e #3b82f6; border-width: 4px 10px 16px 22px; }
+.page .s-half { background: #4f46e5; opacity: .35; }
+.page .callouts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.page .callout { position: relative; padding: 12px 16px 12px 44px; border-radius: 10px; border: 1px solid; font-size: 12.5px; }
+.page .callout::before { content: ''; position: absolute; left: 16px; top: 15px; width: 14px; height: 14px; border-radius: 50%; }
+.page .callout b { display: block; font-size: 13px; }
+.page .c-info { background: #eff6ff; border-color: #bfdbfe; color: #1e3a8a; } .page .c-info::before { background: #3b82f6; }
+.page .c-ok { background: #f0fdf4; border-color: #bbf7d0; color: #14532d; } .page .c-ok::before { background: #22c55e; }
+.page .c-warn { background: #fffbeb; border-color: #fde68a; color: #78350f; } .page .c-warn::before { background: #f59e0b; }
+.page .c-bad { background: #fef2f2; border-color: #fecaca; color: #7f1d1d; } .page .c-bad::before { background: #ef4444; }
+.page .clip { border-radius: 18px; overflow: hidden; display: grid; grid-template-columns: repeat(4, 1fr); }
+.page .clip div { height: 64px; padding: 10px 12px; color: #fff; font: 600 11px 'Montserrat'; }
+.page .codebox { background: #0f172a; color: #e2e8f0; border-radius: 12px; padding: 14px 18px; font: 400 11.5px/1.7 'JetBrains Mono'; box-shadow: inset 4px 0 0 #22d3ee; }
+.page .codebox .k { color: #c084fc; } .page .codebox .s { color: #86efac; } .page .codebox .c { color: #64748b; font-style: italic; } .page .codebox .f { color: #7dd3fc; }
+
+/* ── 5. imagens ── */
+.page .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 16px; }
+.page .gallery figure { font-size: 10.5px; color: var(--muted); }
+.page .gallery img { display: block; width: 100%; height: 118px; object-fit: cover; border-radius: 10px; margin-bottom: 5px; }
+.page .gallery code { font: 400 10px 'JetBrains Mono'; color: #3730a3; }
+.page .imgrow { display: flex; gap: 22px; align-items: center; }
+.page .avatar { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 0 0 3px var(--brand); }
+.page .badge-img { width: 120px; height: 120px; filter: drop-shadow(6px 8px 6px rgba(17, 20, 42, .45)); }
+.page .contain { width: 200px; height: 110px; object-fit: contain; background: #f3f4f6; border-radius: 10px; border: 1px solid #cbd5e1; }
+.page .wide { width: 100%; height: 170px; object-fit: cover; border-radius: 16px 16px 60px 16px; }
+.page .card-img { display: grid; grid-template-columns: 210px 1fr; gap: 18px; align-items: center; background: var(--soft); border-radius: 14px; padding: 14px; }
+.page .card-img img { width: 210px; height: 130px; object-fit: cover; border-radius: 10px; filter: saturate(1.4) contrast(1.1); }
+
+/* ── 6. listas e marcas ── */
+.page .lists { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 28px; }
+.page .lists h4 { font: 600 12px 'Montserrat'; letter-spacing: .06em; text-transform: uppercase; color: var(--brand); margin-bottom: 6px; }
+.page .lists ul, .page .lists ol { padding-left: 22px; }
+.page .lists li { margin: 3px 0; }
+.page .l-square { list-style: square; } .page .l-circle { list-style: circle; }
+.page .l-alpha { list-style: lower-alpha; } .page .l-upper { list-style: upper-alpha; }
+.page .l-color li::marker { color: var(--accent); font-weight: 700; }
+.page .steps { list-style: none; padding: 0 !important; counter-reset: none; }
+.page .steps li { position: relative; padding: 8px 12px 8px 40px !important; background: var(--soft); border-radius: 10px; margin: 6px 0 !important; }
+.page .steps li::before { content: ''; position: absolute; left: 14px; top: 50%; width: 14px; height: 14px; margin-top: -7px; border-radius: 4px; background: linear-gradient(#22d3ee, #4f46e5); }
+.page .marks p { font: 400 16px/2.1 'Jh Serif'; }
+
+/* marcas à mão (a forma vem de ../resources/marks.css; a cor de --mk-color) */
+.page .mk { position: relative; display: inline-block; isolation: isolate; --mk-color: #e5484d; }
+.page .mk::after {
+  content: ''; position: absolute; pointer-events: none; z-index: -1; background: var(--mk-color);
+  -webkit-mask: var(--mk-shape) center / 100% 100% no-repeat; mask: var(--mk-shape) center / 100% 100% no-repeat;
+}
+.page .mk-circle, .page .mk-box { margin: 0 .35em; }
+.page .mk-underline::after { left: -.1em; right: -.1em; bottom: -.32em; height: .5em; }
+.page .mk-circle::after { top: -.34em; bottom: -.34em; left: -.6em; right: -.6em; }
+.page .mk-highlight::after { top: .1em; bottom: -.06em; left: -.18em; right: -.18em; opacity: .5; }
+.page .mk-box::after { top: -.2em; bottom: -.2em; left: -.34em; right: -.34em; }
+.page .mk-strike::after { left: -.14em; right: -.14em; top: 50%; height: .36em; margin-top: -.17em; }
+.page .mk-cross::after { top: -.1em; bottom: -.1em; left: -.2em; right: -.2em; }
+
+/* ── 7. fatura ── */
+.page .inv-head { display: flex; justify-content: space-between; align-items: flex-start; }
+.page .logo { display: flex; align-items: center; gap: 10px; font: 700 20px 'Montserrat'; color: #11142a; }
+.page .logo i { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(#22d3ee, #4f46e5); display: block; }
+.page .inv-meta { text-align: right; font-size: 12px; color: var(--muted); }
+.page .inv-meta b { display: block; font: 700 26px 'Montserrat'; color: #11142a; letter-spacing: .04em; }
+.page .parties { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin: 30px 0 22px; }
+.page .parties div { font-size: 12px; line-height: 1.55; }
+.page .parties h4 { font: 600 10.5px 'Montserrat'; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.page .t4 thead th { font: 600 10.5px 'Montserrat'; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 8px 10px; border-bottom: 2px solid #11142a; }
+.page .t4 td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 12px; }
+.page .t4 td small { display: block; color: var(--muted); font-size: 11px; }
+.page .t4 .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.page .totals { margin: 18px 0 0 auto; width: 290px; font-size: 12.5px; }
+.page .totals div { display: flex; justify-content: space-between; padding: 5px 0; }
+.page .totals .grand { margin-top: 6px; padding: 12px 14px; border-radius: 10px; background: #11142a; color: #fff; font: 700 16px 'Montserrat'; }
+.page .notes { margin-top: 28px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; font-size: 11.5px; color: var(--muted); }
+.page .notes .pay { background: var(--soft); border-radius: 10px; padding: 12px 14px; border-left: 4px solid var(--ok); color: var(--ink); }
+.page .stamp { position: absolute; left: 90px; top: 668px; padding: 6px 16px; border: 3px solid var(--ok); border-radius: 8px; color: var(--ok); font: 700 18px 'Montserrat'; letter-spacing: .2em; opacity: .55; }

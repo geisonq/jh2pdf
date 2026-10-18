@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Jh2Pdf — exemplo mínimo</title>
+<style>
+  body { font-family: 'DM Sans', sans-serif; padding: 24px; }
+  .page { width: 1280px; height: 720px; box-sizing: border-box; padding: 60px; background: #fff; border: 1px solid #ddd; }
+  h1 { font-family: 'Jh Serif', serif; color: #1c3d2e; }
+  .box { background: #e8f0eb; border-radius: 8px; padding: 16px 20px; margin-top: 24px; }
+</style>
+</head>
+<body>
+<button id="go">Gerar PDF</button>
+<div class="page">
+  <h1>Olá, Jh2Pdf</h1>
+  <p>O navegador calcula o layout; o PHP só desenha o PDF.</p>
+  <div class="box"><strong>Caixa</strong> com fundo e cantos arredondados.</div>
+</div>
+<script type="module">
+  import { extractLayout } from '../../js/jh2pdf.js';
+
+  document.getElementById('go').onclick = async () => {
+    // cada página é um fragmento de HTML; aqui, o conteúdo da .page acima
+    const html = document.querySelector('.page').innerHTML;
+    const layout = await extractLayout([html, '<h1>Segunda página</h1>'], {
+      width: 1280, height: 720,
+      wrap: (page) => '<div class="page">' + page + '</div>',   // o CSS da .page vale: é o mesmo documento
+    });
+    const res = await fetch('endpoint.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(layout) });
+    if (!res.ok) { alert('Erro ao gerar o PDF'); return; }
+    window.open(URL.createObjectURL(await res.blob()));
+  };
+</script>
+</body>
+</html>

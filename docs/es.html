@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jh2Pdf — documentación</title>
+<link rel="stylesheet" href="../demo/fonts.css">
+<style>
+  :root { --bg: #ffffff; --soft: #f5f6fa; --ink: #1a1d2e; --muted: #5d6378; --line: #e3e5ed; --brand: #4f46e5; --code: #0f172a; --ok: #15803d; --bad: #b91c1c; --warn: #b45309; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 20px; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.65 'DM Sans', system-ui, sans-serif; }
+  a { color: var(--brand); }
+  .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); max-width: 1240px; margin: 0 auto; }
+  aside { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 26px 18px 40px 24px; border-right: 1px solid var(--line); font-size: 14px; }
+  .brand { display: flex; align-items: center; gap: 10px; font: 700 20px 'Montserrat'; text-decoration: none; color: var(--ink); margin-bottom: 4px; }
+  .brand i { width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(#22d3ee, #4f46e5); }
+  .ver { color: var(--muted); font-size: 12.5px; margin-bottom: 18px; }
+  aside nav a { display: block; padding: 4px 10px; border-radius: 7px; color: var(--muted); text-decoration: none; }
+  aside nav a:hover { background: var(--soft); color: var(--ink); }
+  aside nav .g { margin: 16px 0 4px 10px; font: 600 11px 'Montserrat'; letter-spacing: .1em; text-transform: uppercase; color: #8b90a3; }
+  main { padding: 34px 48px 90px; min-width: 0; }
+  h1 { font: 700 40px/1.15 'Jh Display'; margin: 0 0 10px; }
+  h2 { font: 700 26px/1.25 'Jh Display'; margin: 56px 0 14px; padding-top: 18px; border-top: 1px solid var(--line); }
+  h3 { font: 600 18px/1.35 'Montserrat'; margin: 30px 0 10px; }
+  .lead { font-size: 18px; color: var(--muted); max-width: 760px; }
+  code { font: 13.5px 'JetBrains Mono', monospace; background: #eef0ff; color: #3730a3; padding: 1px 5px; border-radius: 5px; }
+  pre { background: var(--code); color: #e2e8f0; border-radius: 12px; padding: 16px 20px; overflow-x: auto; font: 13px/1.6 'JetBrains Mono', monospace; }
+  pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+  pre .c { color: #64748b; } pre .k { color: #c084fc; } pre .s { color: #86efac; } pre .f { color: #7dd3fc; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; margin: 12px 0; display: block; overflow-x: auto; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font: 600 12px 'Montserrat'; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); border-bottom: 2px solid var(--ink); white-space: nowrap; }
+  td code { white-space: nowrap; }
+  .note { border-left: 4px solid var(--brand); background: #eef0ff; padding: 12px 16px; border-radius: 0 10px 10px 0; margin: 16px 0; }
+  .note.warn { border-color: #f59e0b; background: #fffbeb; }
+  .note.ok { border-color: #22c55e; background: #f0fdf4; }
+  .yes { color: var(--ok); font-weight: 700; } .no { color: var(--bad); font-weight: 700; } .part { color: var(--warn); font-weight: 700; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 18px 0; }
+  .cards div { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; background: var(--soft); }
+  .cards b { display: block; font: 600 15px 'Montserrat'; margin-bottom: 4px; }
+  .cards span { font-size: 14px; color: var(--muted); }
+  .btn { display: inline-block; background: var(--brand); color: #fff; padding: 9px 16px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14.5px; margin: 6px 8px 0 0; }
+  .btn.alt { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+  .lang { display: flex; gap: 4px; margin: -6px 0 16px; font-size: 13px; }
+  .lang a, .lang b { padding: 2px 9px; border-radius: 99px; border: 1px solid var(--line); text-decoration: none; color: var(--muted); }
+  .lang b { background: var(--ink); border-color: var(--ink); color: #fff; font-weight: 600; }
+  .lang a:hover { color: var(--ink); border-color: #c5c8d6; }
+  .flow { font: 12.5px/1.45 'JetBrains Mono', monospace; }
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 18px 16px; }
+    aside nav { display: flex; flex-wrap: wrap; gap: 2px; } aside nav .g { width: 100%; }
+    main { padding: 24px 16px 70px; }
+    h1 { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside>
+  <a class="brand" href="../"><i></i> Jh2Pdf</a>
+  <div class="ver">Documentación · MIT · PHP ≥ 8.1</div>
+  <div class="lang"><a href="index.html" hreflang="en">English</a><a href="pt-BR.html" hreflang="pt-BR">Português</a><b>Español</b></div>
+  <nav>
+    <div class="g">Primeros pasos</div>
+    <a href="#overview">Visión general</a>
+    <a href="#how">Cómo funciona</a>
+    <a href="#requirements">Requisitos</a>
+    <a href="#install">Instalación</a>
+    <a href="#quickstart">Inicio rápido</a>
+    <div class="g">Referencia</div>
+    <a href="#js">API JavaScript</a>
+    <a href="#php">API PHP</a>
+    <a href="#options">Options</a>
+    <a href="#format">Formato del JSON</a>
+    <a href="#css">CSS soportado</a>
+    <div class="g">Guías</div>
+    <a href="#pages">Páginas y tamaños</a>
+    <a href="#fonts">Fuentes</a>
+    <a href="#images">Imágenes</a>
+    <a href="#marks">Marcas a mano</a>
+    <a href="#security">Seguridad</a>
+    <a href="#performance">Rendimiento</a>
+    <a href="#troubleshooting">Solución de problemas</a>
+    <div class="g">Proyecto</div>
+    <a href="#dependencies">Dependencias</a>
+    <a href="#license">Licencia</a>
+    <a href="#structure">Estructura</a>
+    <a href="#contributing">Cómo contribuir</a>
+  </nav>
+</aside>
+
+<main>
+<h1>Jh2Pdf</h1>
+<p class="lead">HTML a PDF idéntico al navegador, sin navegador en el servidor. El navegador de quien exporta calcula el diseño; PHP solo dibuja el PDF.
+  Funciona en hosting compartido (PHP + GD).</p>
+<a class="btn" href="../demo/">Ver la galería de ejemplos</a><a class="btn alt" href="format.md">Formato del JSON (format.md)</a><a class="btn alt" href="../LICENSE">Licencia MIT</a>
+
+<!-- ───────────────────────── -->
+<h2 id="overview">Visión general</h2>
+<p>Generar PDF a partir de HTML suele terminar en uno de estos callejones sin salida:</p>
+<table>
+  <thead><tr><th>Opción</th><th>Problema</th></tr></thead>
+  <tbody>
+    <tr><td>Chrome / Puppeteer en el servidor</td><td>necesita un VPS o contenedor; no funciona en hosting compartido</td></tr>
+    <tr><td>wkhtmltopdf</td><td>binario en el servidor, CSS antiguo, proyecto descontinuado</td></tr>
+    <tr><td>Dompdf / mPDF / TCPDF leyendo el HTML</td><td>solo entienden CSS 2.1: sin flexbox, grid, variables, <code>clamp()</code>, filtros… el PDF sale distinto de la pantalla</td></tr>
+    <tr><td>API externa de PDF</td><td>costo, dependencia de terceros y el contenido sale de tu servidor</td></tr>
+  </tbody>
+</table>
+<p>Jh2Pdf parte de otra idea: <strong>el navegador de quien exporta ya es el mejor motor de diseño que existe, y ya está abierto</strong>.
+  En lugar de reimplementar CSS en PHP, el navegador calcula dónde va cada palabra, caja, borde e imagen, y PHP solo dibuja esas posiciones.
+  No hay saltos de línea ni cálculo de diseño en el servidor que puedan fallar.</p>
+<div class="cards">
+  <div><b>Fiel a la pantalla</b><span>flexbox, grid, variables CSS, <code>calc()</code>: todo lo que el navegador entiende, porque es él quien mide.</span></div>
+  <div><b>Texto real</b><span>texto seleccionable y buscable, con las fuentes incrustadas (subconjunto).</span></div>
+  <div><b>Hosting sencillo</b><span>solo PHP 8.1 + GD + mbstring. Sin Chrome, sin Node, sin binarios.</span></div>
+  <div><b>Seguro por diseño</b><span>el servidor nunca interpreta HTML, CSS ni JS: solo números, colores y texto validados.</span></div>
+</div>
+
+<!-- ───────────────────────── -->
+<h2 id="how">Cómo funciona</h2>
+<pre class="flow"><code> NAVEGADOR (js/jh2pdf.js)                               SERVIDOR (PHP)
+ ────────────────────────                               ──────────────
+ tu HTML + tu CSS                                       Options  (tempDir, fontDir, imageResolver…)
+   │ dibuja cada página fuera de la pantalla               │
+   │ (espera fuentes e imágenes)                           ▼
+   ▼                                                    Layout::clean()   valida todo (el JSON es hostil)
+ extractLayout()  recorre el DOM:                          │
+   getComputedStyle + Range.getClientRects por palabra     ▼
+   │                                                    Renderer::render()  → Dompdf\Cpdf
+   ▼                                                       R rectángulo · B bordes · T texto · I imagen
+ JSON de operaciones ─────── POST ───────────────────►     M marca a mano · L línea · C/E recorte
+ { w, h, pages: [{ bg, ops: [...] }] }                     │
+                                                           ▼
+                                                        bytes del PDF</code></pre>
+<ol>
+  <li><strong>Medición (navegador).</strong> Cada página se inserta en un contenedor fuera de la pantalla, dentro de tu propio documento, así que tu CSS se aplica.
+    El módulo espera las fuentes (<code>document.fonts.ready</code>) y las imágenes (hasta 4 s cada una).</li>
+  <li><strong>Extracción.</strong> Para cada elemento visible lee el estilo calculado y las cajas; para cada <em>palabra</em>, la posición y el ancho exactos.
+    El resultado es una lista ordenada de operaciones de dibujo (el orden es el orden de pintado).</li>
+  <li><strong>Dibujo (servidor).</strong> PHP valida el JSON y dibuja las operaciones con el <code>Cpdf</code> de Dompdf, usado solo como "lienzo" de PDF.
+    Cada palabra se coloca en su línea base y su espaciado entre letras se ajusta para tener <em>exactamente</em> el ancho medido.</li>
+</ol>
+
+<!-- ───────────────────────── -->
+<h2 id="requirements">Requisitos</h2>
+<table>
+  <thead><tr><th>Dónde</th><th>Requisito</th><th>Observación</th></tr></thead>
+  <tbody>
+    <tr><td>Navegador</td><td>cualquier navegador moderno (Chromium, Firefox, Safari)</td><td>usa módulos ES, <code>Range.getClientRects</code>, <code>document.fonts</code></td></tr>
+    <tr><td>Servidor</td><td>PHP ≥ 8.1</td><td>probado en 8.2</td></tr>
+    <tr><td>Servidor</td><td>extensiones <code>gd</code> y <code>mbstring</code></td><td>GD: imágenes, filtros y sombras · mbstring: texto UTF-8</td></tr>
+    <tr><td>Servidor</td><td><code>dompdf/dompdf</code> ^3.1</td><td>instalado con Composer (ver <a href="#dependencies">Dependencias</a>)</td></tr>
+    <tr><td>Servidor</td><td>una carpeta con permiso de escritura</td><td>caché de fuentes e imágenes temporales (<code>Options::$tempDir</code>)</td></tr>
+  </tbody>
+</table>
+
+<!-- ───────────────────────── -->
+<h2 id="install">Instalación</h2>
+<h3>Con Composer</h3>
+<pre><code>composer require jh2pdf/jh2pdf</code></pre>
+<p>O, desde este repositorio: <code>composer install</code> en la raíz (instala Dompdf en <code>vendor/</code>).</p>
+<h3>Sin Composer</h3>
+<p>Copia la carpeta y usa el autoloader incluido. Dompdf sigue siendo necesario y tienes que cargarlo tú:</p>
+<pre><code><span class="k">require</span> <span class="s">'/ruta/jh2pdf/autoload.php'</span>;      <span class="c">// clases Jh2Pdf\*</span>
+<span class="k">require</span> <span class="s">'/ruta/vendor/autoload.php'</span>;      <span class="c">// Dompdf</span></code></pre>
+<h3>En el navegador</h3>
+<p>Copia <code>js/jh2pdf.js</code> a tu sitio. Es un módulo ES <strong>sin dependencias</strong> (~30 KB, sin minificar).</p>
+
+<!-- ───────────────────────── -->
+<h2 id="quickstart">Inicio rápido</h2>
+<h3>1. Navegador</h3>
+<pre><code><span class="k">import</span> { extractLayout } <span class="k">from</span> <span class="s">'./jh2pdf.js'</span>;
+
+<span class="k">const</span> layout = <span class="k">await</span> <span class="f">extractLayout</span>(
+  [<span class="s">'&lt;h1&gt;Hola&lt;/h1&gt;&lt;p&gt;Primera página&lt;/p&gt;'</span>, <span class="s">'&lt;p&gt;Segunda página&lt;/p&gt;'</span>],  <span class="c">// un fragmento de HTML por página</span>
+  { width: <span class="s">794</span>, height: <span class="s">1123</span> }                                       <span class="c">// A4 vertical en px CSS</span>
+);
+<span class="k">const</span> res = <span class="k">await</span> <span class="f">fetch</span>(<span class="s">'/pdf.php'</span>, {
+  method: <span class="s">'POST'</span>, headers: { <span class="s">'Content-Type'</span>: <span class="s">'application/json'</span> }, body: JSON.<span class="f">stringify</span>(layout),
+});
+<span class="k">const</span> pdf = <span class="k">await</span> res.<span class="f">blob</span>();                                  <span class="c">// application/pdf</span>
+window.<span class="f">open</span>(URL.<span class="f">createObjectURL</span>(pdf));</code></pre>
+<h3>2. Servidor (<code>pdf.php</code>)</h3>
+<pre><code><span class="k">require</span> <span class="s">'vendor/autoload.php'</span>;
+
+$raw    = <span class="f">file_get_contents</span>(<span class="s">'php://input'</span>, <span class="k">false</span>, <span class="k">null</span>, <span class="s">0</span>, <span class="s">5_000_000</span>);   <span class="c">// limita el cuerpo</span>
+$layout = <span class="f">json_decode</span>((string)$raw, <span class="k">true</span>);
+<span class="k">if</span> (!<span class="f">is_array</span>($layout)) { <span class="f">http_response_code</span>(<span class="s">400</span>); <span class="k">exit</span>; }
+
+$options = <span class="k">new</span> Jh2Pdf\<span class="f">Options</span>(<span class="s">'/ruta/con/escritura'</span>);
+<span class="k">try</span> {
+    $pdf = (<span class="k">new</span> Jh2Pdf\<span class="f">Renderer</span>($options))-&gt;<span class="f">render</span>($layout, <span class="s">'Título del documento'</span>);
+} <span class="k">catch</span> (Jh2Pdf\Exception $e) {
+    <span class="f">error_log</span>((string)$e-&gt;<span class="f">getPrevious</span>());             <span class="c">// el detalle está en la excepción anterior</span>
+    <span class="f">http_response_code</span>(<span class="s">500</span>); <span class="k">exit</span>;
+}
+<span class="f">header</span>(<span class="s">'Content-Type: application/pdf'</span>);
+<span class="k">echo</span> $pdf;</code></pre>
+<p>Ejemplos ejecutables: <a href="../examples/minimal/">examples/minimal/</a> (lo mínimo) y <a href="../demo/">demo/</a> (galería con tablas, efectos e imágenes).</p>
+
+<!-- ───────────────────────── -->
+<h2 id="js">API JavaScript</h2>
+<h3><code>extractLayout(pages, options) → Promise&lt;Layout&gt;</code></h3>
+<p><code>pages</code> es un array con una entrada por página: un string de HTML, un objeto <code>{ html }</code> o cualquier valor, si pasas <code>wrap</code>.</p>
+<table>
+  <thead><tr><th>Opción</th><th>Tipo</th><th>Por defecto</th><th>Descripción</th></tr></thead>
+  <tbody>
+    <tr><td><code>width</code>, <code>height</code></td><td>número (px)</td><td>—</td><td><strong>Obligatorios.</strong> Tamaño de la página en px CSS. En el PDF se convierte en pt × 0,75 (794×1123 px = A4).</td></tr>
+    <tr><td><code>wrap(page, i)</code></td><td>función → string</td><td><code>&lt;div&gt;…&lt;/div&gt;</code></td><td>HTML <strong>completo</strong> de la página, con un único elemento raíz. El <code>background-color</code> de la raíz se convierte en el fondo de la página. Útil para pasar elementos existentes: <code>wrap: (el) =&gt; el.outerHTML</code>.</td></tr>
+    <tr><td><code>hostCss</code></td><td>string</td><td>—</td><td>CSS extra dentro del contenedor de medición (por ejemplo, un reset). Limítalo con <code>[data-jh2pdf-host]</code>.</td></tr>
+    <tr><td><code>marks</code></td><td>boolean</td><td><code>false</code></td><td>Dibuja las <a href="#marks">marcas a mano</a> (<code>.mk.mk-circle</code> etc.).</td></tr>
+    <tr><td><code>skip(el)</code></td><td>función → boolean</td><td>—</td><td><code>true</code> para <strong>no</strong> dibujar un elemento ni su contenido.</td></tr>
+    <tr><td><code>acceptImage(src)</code></td><td>función → boolean</td><td>—</td><td>Filtra los <code>src</code> de imagen que se envían. Quien decide de verdad es el servidor.</td></tr>
+    <tr><td><code>sanitize(html)</code></td><td>función → string</td><td>—</td><td>Sanitizador del HTML de cada página (por ejemplo, DOMPurify). El filtro interno se ejecuta encima. Ver <a href="#security">Seguridad</a>.</td></tr>
+  </tbody>
+</table>
+<p>Devuelve <code>{ w, h, pages: [{ bg, ops }] }</code>, listo para <code>JSON.stringify</code>. Lanza <code>Error</code> si falta <code>width</code> o <code>height</code>.</p>
+<div class="note"><strong>Consejo:</strong> como la medición ocurre dentro de tu documento, limita el CSS de la página a una clase (por ejemplo, <code>.page</code>) y no dependas del contenedor que la rodea.
+  El contenedor está en <code>position: fixed</code>, fuera de la pantalla, y hereda del <code>&lt;body&gt;</code>. Declara fuente, color y <code>line-height</code> en la raíz de la página.</div>
+
+<!-- ───────────────────────── -->
+<h2 id="php">API PHP</h2>
+<p>Namespace <code>Jh2Pdf</code>, PHP 8.1 con <code>strict_types</code>.</p>
+<table>
+  <thead><tr><th>Clase</th><th>Función</th></tr></thead>
+  <tbody>
+    <tr><td><code>Renderer</code></td><td><code>__construct(Options $o)</code> · <code>render(array $layout, string $title = ''): string</code>. Devuelve los bytes del PDF y lanza <code>Jh2Pdf\Exception</code> si falla.</td></tr>
+    <tr><td><code>Options</code></td><td>Configuración. Solo <code>tempDir</code> es obligatorio (ver <a href="#options">Options</a>).</td></tr>
+    <tr><td><code>ImageResolver</code></td><td>Interfaz <code>load(string $src): ?string</code>. Tú decides de dónde vienen las imágenes; devuelve <code>null</code> para rechazar.</td></tr>
+    <tr><td><code>DataUriImageResolver</code></td><td>Resolvedor por defecto. Solo acepta <code>data:image/(png|jpeg|gif|webp);base64,…</code>, hasta 12 MB (<code>__construct(int $maxBytes)</code>).</td></tr>
+    <tr><td><code>Exception</code></td><td>Extiende <code>RuntimeException</code>. Mensaje genérico, sin rutas del servidor; el detalle está en <code>getPrevious()</code>.</td></tr>
+    <tr><td><code>Layout</code></td><td><code>clean(array, ?Options)</code> valida el JSON · <code>num($v, $min, $max)</code> y <code>color($v)</code> son conversores seguros · <code>OPS = 'RBTILMCE'</code>.</td></tr>
+    <tr><td><code>ImageFilter</code></td><td><code>apply(string $dataUri, string $filter, …): ?string</code> aplica filtros CSS con GD. Se puede usar por separado.</td></tr>
+    <tr><td><code>Images</code></td><td>Interna: resuelve, filtra, reduce (<code>shrink</code>) y genera sombras (<code>shadow</code>). <code>dimensionsOk()</code> valida la cabecera antes de decodificar.</td></tr>
+    <tr><td><code>Fonts</code></td><td>Interna: registra en Dompdf un TTF por familia y peso; cursiva simulada si la familia no la tiene.</td></tr>
+    <tr><td><code>Marks</code>, <code>Svg</code></td><td>Internas: leen los dibujos de las marcas (SVG dentro del CSS) y convierten los trazados SVG en polígonos.</td></tr>
+  </tbody>
+</table>
+
+<h3 id="options">Options</h3>
+<table>
+  <thead><tr><th>Propiedad</th><th>Tipo</th><th>Por defecto</th><th>Descripción</th></tr></thead>
+  <tbody>
+    <tr><td><code>tempDir</code></td><td>string</td><td>—</td><td><strong>Obligatorio</strong> (1.er argumento del constructor). Carpeta con escritura: caché de fuentes de Dompdf e imágenes temporales.</td></tr>
+    <tr><td><code>fontDir</code></td><td>string</td><td><code>fonts/</code> de la biblioteca</td><td>Carpeta de los TTF estáticos (2.º argumento del constructor).</td></tr>
+    <tr><td><code>imageResolver</code></td><td>?ImageResolver</td><td><code>DataUriImageResolver</code></td><td>De dónde vienen las imágenes.</td></tr>
+    <tr><td><code>marksCss</code></td><td>?string</td><td><code>resources/marks.css</code></td><td>Archivo CSS con los dibujos de las marcas a mano.</td></tr>
+    <tr><td><code>creator</code></td><td>string</td><td><code>'Jh2Pdf'</code></td><td>Metadato "Creator" del PDF.</td></tr>
+    <tr><td><code>fallbackFont</code></td><td>string</td><td><code>'DejaVu Sans'</code></td><td>Fuente usada cuando la familia no existe en <code>fontDir</code>.</td></tr>
+    <tr><td><code>maxPages</code></td><td>int</td><td>1000</td><td>Las páginas que excedan este número se descartan.</td></tr>
+    <tr><td><code>maxOpsPerPage</code></td><td>int</td><td>60 000</td><td>Operaciones por página.</td></tr>
+    <tr><td><code>maxOpsTotal</code></td><td>int</td><td>400 000</td><td>Operaciones en todo el documento.</td></tr>
+    <tr><td><code>maxImages</code></td><td>int</td><td>200</td><td>Imágenes procesadas por PDF (cada una cuesta CPU y memoria).</td></tr>
+    <tr><td><code>memoryLimit</code></td><td>?string</td><td><code>'512M'</code></td><td>Sube el <code>memory_limit</code> durante la generación (nunca lo baja). <code>null</code> = no tocarlo.</td></tr>
+    <tr><td><code>pxToPt</code></td><td>float</td><td>0.75</td><td>Conversión de px CSS a pt (96 dpi).</td></tr>
+  </tbody>
+</table>
+
+<!-- ───────────────────────── -->
+<h2 id="format">Formato del JSON</h2>
+<p>Es el contrato entre el JS y el PHP. Medidas en px CSS, origen en la esquina superior izquierda, colores <code>#rrggbb</code>, opacidad de 0 a 1.
+  La referencia completa está en <a href="format.md">docs/format.md</a> (en portugués).</p>
+<pre><code>{ <span class="s">"w"</span>: 794, <span class="s">"h"</span>: 1123,
+  <span class="s">"pages"</span>: [ { <span class="s">"bg"</span>: <span class="s">"#ffffff"</span>, <span class="s">"ops"</span>: [
+      { <span class="s">"t"</span>: <span class="s">"R"</span>, <span class="s">"x"</span>: 0, <span class="s">"y"</span>: 0, <span class="s">"w"</span>: 794, <span class="s">"h"</span>: 300, <span class="s">"c"</span>: <span class="s">"#4f46e5"</span>, <span class="s">"a"</span>: 1, <span class="s">"r"</span>: [12,12,0,0] },
+      { <span class="s">"t"</span>: <span class="s">"T"</span>, <span class="s">"x"</span>: 60, <span class="s">"y"</span>: 80, <span class="s">"w"</span>: 92.4, <span class="s">"h"</span>: 44, <span class="s">"s"</span>: <span class="s">"Lorem"</span>, <span class="s">"f"</span>: <span class="s">"Jh Display"</span>, <span class="s">"g"</span>: 700, <span class="s">"z"</span>: 40, <span class="s">"c"</span>: <span class="s">"#ffffff"</span> }
+  ] } ] }</code></pre>
+<table>
+  <thead><tr><th>Op</th><th>Nombre</th><th>Campos principales</th></tr></thead>
+  <tbody>
+    <tr><td><code>R</code></td><td>rectángulo relleno</td><td><code>x y w h c a r[4]</code></td></tr>
+    <tr><td><code>B</code></td><td>bordes</td><td><code>x y w h s[4]=[ancho,color,a]</code> (arriba, derecha, abajo, izquierda) <code>r[4]</code></td></tr>
+    <tr><td><code>T</code></td><td>texto (una palabra)</td><td><code>x y w h s f g i z c a l d</code> (d: 1 subrayado, 2 tachado)</td></tr>
+    <tr><td><code>I</code></td><td>imagen</td><td><code>x y w h u k[4] f a r[4]</code> (<code>u</code> = src, <code>k</code> = recorte, <code>f</code> = filtro CSS)</td></tr>
+    <tr><td><code>M</code></td><td>marca a mano</td><td><code>m v x y w h c z</code></td></tr>
+    <tr><td><code>L</code></td><td>línea</td><td><code>x y x2 y2 c w a</code></td></tr>
+    <tr><td><code>C</code> / <code>E</code></td><td>inicio / fin de recorte redondeado</td><td><code>x y w h r[4]</code> (anidables hasta 32 niveles)</td></tr>
+  </tbody>
+</table>
+
+<!-- ───────────────────────── -->
+<h2 id="css">CSS soportado</h2>
+<p>El diseño en sí (flexbox, grid, posicionamiento, <code>calc()</code>, variables, unidades) siempre está soportado, porque quien lo calcula es el navegador.
+  La tabla de abajo trata de lo que se <em>dibuja</em>.</p>
+<table>
+  <thead><tr><th>Recurso</th><th>Estado</th><th>Detalles</th></tr></thead>
+  <tbody>
+    <tr><td>Texto: familia, peso 400–700, cursiva, tamaño, color, opacidad</td><td class="yes">Sí</td><td>Los pesos fuera de 400–700 se redondean. Las familias sin cursiva se inclinan 12°, como hace el navegador.</td></tr>
+    <tr><td><code>text-transform</code>, <code>letter-spacing</code></td><td class="yes">Sí</td><td>El ancho final siempre es el medido por el navegador.</td></tr>
+    <tr><td><code>text-decoration</code> (subrayado, tachado)</td><td class="part">Parcial</td><td>La línea se dibuja palabra por palabra (no pasa bajo los espacios). El color y el estilo de la decoración se ignoran.</td></tr>
+    <tr><td><code>background-color</code>, <code>border-radius</code> (por esquina)</td><td class="yes">Sí</td><td></td></tr>
+    <tr><td><code>linear-gradient</code></td><td class="part">Parcial</td><td>Vertical y horizontal, con varias paradas, dibujado como franjas finas. Los ángulos diagonales se ajustan a la dirección más cercana. Sin <code>radial</code>, <code>repeating</code> ni capas.</td></tr>
+    <tr><td>Bordes (ancho y color por lado)</td><td class="part">Parcial</td><td><code>dashed</code>, <code>dotted</code> y <code>double</code> salen sólidos. Los bordes muy gruesos y redondeados pueden mostrar uniones finas.</td></tr>
+    <tr><td><code>box-shadow</code> sin desenfoque (exterior e interior)</td><td class="yes">Sí</td><td>Varias sombras y <code>spread</code>. Interior: solo desplazamiento, sin <code>spread</code>.</td></tr>
+    <tr><td><code>box-shadow</code> con desenfoque, <code>text-shadow</code></td><td class="no">No</td><td>Se ignoran.</td></tr>
+    <tr><td><code>opacity</code></td><td class="yes">Sí</td><td>Multiplicada por los ancestros.</td></tr>
+    <tr><td><code>overflow: hidden</code> con <code>border-radius</code></td><td class="yes">Sí</td><td>Recorte redondeado de todo lo que haya dentro.</td></tr>
+    <tr><td><code>&lt;img&gt;</code> PNG, JPEG, GIF, WebP</td><td class="yes">Sí</td><td>Con <code>object-fit</code> (<code>cover</code>, <code>contain</code>, <code>none</code>, <code>scale-down</code>) y esquinas redondeadas.</td></tr>
+    <tr><td><code>filter</code> en imágenes</td><td class="yes">Sí</td><td><code>grayscale sepia brightness contrast invert blur saturate hue-rotate opacity drop-shadow</code> (aplicados con GD).</td></tr>
+    <tr><td>Listas: <code>disc circle square decimal lower/upper-alpha</code>, <code>::marker</code></td><td class="yes">Sí</td><td>Incluidos <code>start</code> y <code>value</code>.</td></tr>
+    <tr><td><code>::before</code>/<code>::after</code> vacíos (<code>content: ''</code>)</td><td class="part">Parcial</td><td>Con fondo, borde, esquinas y sombra sólida, cuando son <code>position: absolute</code> o <code>display: block</code>. No funciona con <code>inline-block</code>.</td></tr>
+    <tr><td>Pseudoelementos con texto, contadores, <code>::first-letter</code></td><td class="no">No</td><td>Usa un elemento real (<code>&lt;span&gt;</code>) para números y etiquetas.</td></tr>
+    <tr><td><code>background-image: url()</code>, <code>transform</code>, <code>clip-path</code>, <code>mask</code></td><td class="no">No</td><td></td></tr>
+    <tr><td>SVG en línea, <code>&lt;canvas&gt;</code>, <code>&lt;video&gt;</code>, <code>&lt;iframe&gt;</code></td><td class="no">No</td><td>Convierte el canvas en <code>&lt;img src="data:…"&gt;</code> antes de extraer (la demo lo hace).</td></tr>
+    <tr><td>Ligaduras tipográficas</td><td class="no">No</td><td>Por ejemplo, <code>=&gt;</code> en Fira Code se convierte en dos caracteres.</td></tr>
+    <tr><td>Enlaces clicables en el PDF</td><td class="no">No</td><td>No se crea ninguna anotación ni acción (es una decisión de seguridad).</td></tr>
+  </tbody>
+</table>
+
+<!-- ───────────────────────── -->
+<h2 id="pages">Páginas y tamaños</h2>
+<p>Cada elemento de <code>pages</code> es <strong>una página del PDF</strong>, del tamaño <code>width</code> × <code>height</code>. No hay paginación automática:
+  lo que exceda la altura de la página se corta. Divide el contenido en páginas antes de extraer (por ejemplo, una sección por página, o midiendo alturas en el navegador).</p>
+<table>
+  <thead><tr><th>Formato</th><th>px CSS (<code>width</code> × <code>height</code>)</th><th>PDF (pt)</th></tr></thead>
+  <tbody>
+    <tr><td>A4 vertical</td><td>794 × 1123</td><td>595 × 842</td></tr>
+    <tr><td>A4 horizontal</td><td>1123 × 794</td><td>842 × 595</td></tr>
+    <tr><td>Carta (Letter)</td><td>816 × 1056</td><td>612 × 792</td></tr>
+    <tr><td>Diapositiva 16:9</td><td>1280 × 720</td><td>960 × 540</td></tr>
+  </tbody>
+</table>
+<p>El tamaño aceptado va de 200 a 4000 px por lado.</p>
+
+<!-- ───────────────────────── -->
+<h2 id="fonts">Fuentes</h2>
+<p>Dompdf no lee woff2 ni fuentes variables. Por eso <code>fonts/</code> contiene <strong>TTF estáticos, uno por peso</strong>:</p>
+<pre><code>fonts/dm-sans-400.ttf   dm-sans-500.ttf   dm-sans-600.ttf   dm-sans-700.ttf   dm-sans-400-italic.ttf …
+      └ familia en minúsculas con guiones  └ peso 400/500/600/700              └ cursiva, si existe</code></pre>
+<ul>
+  <li>El navegador informa la familia (la <strong>primera</strong> de <code>font-family</code>) y el peso de cada palabra. PHP usa el archivo correspondiente;
+    si no existe, usa la fuente de reserva (DejaVu Sans) y el texto sale con otra fuente.</li>
+  <li><strong>La pantalla debe usar el mismo archivo.</strong> Declara un <code>@font-face</code> con el mismo nombre de familia apuntando a los TTF
+    (ver <code>demo/fonts.css</code>). Si el navegador mide con otra fuente, el ancho de las palabras no coincide.</li>
+  <li>Incluidas (12 familias, SIL OFL 1.1): Barlow Condensed, DM Sans, Fira Code, Inter, JetBrains Mono, Montserrat, Nunito, Open Sans y cuatro serif renombradas:
+    Jh Serif (de Lora), Jh Serif Text (de Merriweather), Jh Display (de Playfair Display) y Jh Serif Book (de Source Serif 4). Con cursiva: DM Sans y Jh Serif.</li>
+</ul>
+<h3>Agregar una fuente</h3>
+<pre><code>pip install fonttools brotli
+python tools/generate-fonts.py --fonts fonts.json --src carpeta-de-fuentes --out fonts</code></pre>
+<p>El formato de <code>fonts.json</code> está en la cabecera del script. Python solo se necesita para generar los archivos; el servidor usa los TTF ya listos.
+  Si la fuente ya tiene TTF estáticos, basta con copiarlos con el nombre según el patrón de arriba.</p>
+
+<!-- ───────────────────────── -->
+<h2 id="images">Imágenes</h2>
+<p>El <code>src</code> de cada imagen viene del navegador y <strong>no es confiable</strong>. Por defecto solo se acepta <code>data:</code> (nada de disco ni de red).
+  Para servir imágenes de tu sistema, implementa un resolvedor y verifica que ese usuario pueda ver ese archivo:</p>
+<pre><code><span class="k">final class</span> MiResolvedor <span class="k">implements</span> Jh2Pdf\ImageResolver
+{
+    <span class="k">public function</span> <span class="f">load</span>(string $src): ?string
+    {
+        <span class="c">// solo tu patrón de URL; nunca concatenes el src en una ruta</span>
+        <span class="k">if</span> (!<span class="f">preg_match</span>(<span class="s">'~^/uploads/([a-f0-9]{16}\.(png|jpg))$~'</span>, $src, $m)) <span class="k">return null</span>;
+        $f = <span class="s">'/var/app/uploads/'</span> . $m[<span class="s">1</span>];
+        <span class="k">return</span> <span class="f">is_file</span>($f) ? <span class="f">file_get_contents</span>($f) : <span class="k">null</span>;
+    }
+}
+$options-&gt;imageResolver = <span class="k">new</span> <span class="f">MiResolvedor</span>();</code></pre>
+<p>En el navegador, <code>acceptImage</code> evita enviar lo que el servidor rechazaría. Las imágenes se reducen al tamaño en que se muestran (~150 dpi):
+  sin transparencia pasan a JPEG, con transparencia siguen siendo PNG.</p>
+
+<!-- ───────────────────────── -->
+<h2 id="marks">Marcas a mano</h2>
+<p>Extensión <strong>opcional</strong>, desactivada por defecto (no es HTML/CSS estándar), para resaltar texto con un trazo "hecho a mano": <code>underline</code>, <code>circle</code>, <code>highlight</code>, <code>box</code>, <code>strike</code>, <code>cross</code>.</p>
+<pre><code>&lt;span class="mk mk-circle" style="--mk-color:#e5484d"&gt;importante&lt;/span&gt;</code></pre>
+<p>Con <code>marks: true</code>, el extractor envía la caja y el color del texto marcado; PHP dibuja el SVG de la forma, que está en <code>resources/marks.css</code>
+  (o en tu propio CSS, mediante <code>Options::$marksCss</code>). Sin <code>--mk-color</code>, se usa el color del texto. Los elementos pares usan la 2.ª variante (<code>:nth-of-type(even)</code>), y una marca con <code>display: inline</code>
+  que se parte en varias líneas recibe un dibujo por línea. Sin <code>marks: true</code>, las clases <code>.mk</code> se tratan como cualquier otro elemento.
+  El CSS de pantalla (una máscara en <code>::after</code>) está en <code>demo/pages.css</code>.</p>
+
+<!-- ───────────────────────── -->
+<h2 id="security">Seguridad</h2>
+<p>Hay dos fronteras, y en cada una lo que viene del otro lado se trata como <strong>hostil</strong>.</p>
+<h3>Servidor: el JSON del navegador</h3>
+<p>Cualquiera que pueda llamar a tu endpoint puede enviar un JSON hecho a mano. Por diseño, el servidor <strong>nunca interpreta HTML, CSS ni JavaScript</strong>.</p>
+<table>
+  <thead><tr><th>Ataque</th><th>Defensa</th></tr></thead>
+  <tbody>
+    <tr><td>Inyectar HTML, JS o CSS en el texto</td><td>El texto va al PDF como glifos (en hexadecimal) y nunca se interpreta.</td></tr>
+    <tr><td>Inyectar objetos PDF (<code>/JS</code>, <code>/OpenAction</code>, <code>/URI</code>, <code>/Launch</code>)</td><td>Texto en hexadecimal, título escapado y ningún objeto de acción o anotación creado. Hay una prueba para esto.</td></tr>
+    <tr><td>Nombre de fuente con <code>../</code>, <code>)</code> o byte nulo</td><td>Reducido a <code>[A-Za-z0-9 -]</code> (60 caracteres) y asignado solo a archivos de <code>fontDir</code>.</td></tr>
+    <tr><td>Leer archivos locales o hacer peticiones (<code>file://</code>, <code>http://</code>, <code>../</code>)</td><td>Las imágenes solo pasan por el <code>ImageResolver</code>. En Dompdf están desactivados <code>isRemoteEnabled</code>, PHP y JS, y hay <code>chroot</code>.</td></tr>
+    <tr><td>Bomba de imagen (PNG pequeño que declara millones de píxeles)</td><td>La cabecera se lee antes de decodificar: lado ≤ 20 000 px y ≤ 25 megapíxeles.</td></tr>
+    <tr><td>Agotar CPU o memoria</td><td>Límites de páginas, operaciones, imágenes y recortes anidados (≤ 32), topes para sombras y desenfoques, <code>set_time_limit(180)</code>.</td></tr>
+    <tr><td>Números o tipos absurdos (<code>1e999</code>, <code>NaN</code>, arrays, <code>url(...)</code>)</td><td><code>Layout::num()</code> limita a un intervalo y <code>Layout::color()</code> solo acepta <code>#rgb</code>/<code>#rrggbb</code>.</td></tr>
+    <tr><td>Filtración de rutas en mensajes de error</td><td>Solo se lanza <code>Jh2Pdf\Exception</code> con un mensaje genérico.</td></tr>
+    <tr><td>Archivos temporales olvidados</td><td>Nombres aleatorios, borrados al final de cada PDF y barridos después de 1 hora.</td></tr>
+  </tbody>
+</table>
+<div class="note warn"><strong>Lo que queda a tu cargo:</strong> autenticación, CSRF, límite de peticiones y límite del tamaño del cuerpo de la petición (generar PDF es costoso),
+  además del <code>ImageResolver</code> cuando lee archivos. Mantén Dompdf, PHP y GD actualizados.</div>
+<h3>Navegador: el HTML de entrada</h3>
+<p>El HTML de cada página entra en el DOM de quien exporta. Si viene de otra persona, es una entrada hostil (XSS). El módulo primero coloca el HTML en un
+  <code>&lt;template&gt;</code> inerte y elimina <code>script</code>, <code>iframe</code>, <code>object</code>, <code>embed</code>, <code>link</code>, <code>meta</code>,
+  <code>base</code>, atributos <code>on*</code>, <code>srcdoc</code>, URLs <code>javascript:</code> y <code>data:</code> que no sean imagen, y <code>expression()</code>.
+  Esto es un <strong>filtro de respaldo</strong>: para contenido de terceros, usa un sanitizador de verdad:</p>
+<pre><code><span class="f">extractLayout</span>(pages, { width, height, sanitize: (h) =&gt; DOMPurify.<span class="f">sanitize</span>(h) });</code></pre>
+<p><code>&lt;style&gt;</code> y <code>url()</code> en el CSS siguen permitidos. No ejecutan código, pero pueden disparar peticiones (rastreo).</p>
+
+<!-- ───────────────────────── -->
+<h2 id="performance">Rendimiento</h2>
+<p>Medido con la <a href="../demo/">galería de ejemplos</a> (7 páginas A4, ~2400 operaciones, 9 imágenes con filtro) en un PC común con XAMPP y PHP 8.2:</p>
+<table>
+  <thead><tr><th>Etapa</th><th>Resultado</th></tr></thead>
+  <tbody>
+    <tr><td>JSON enviado</td><td>~460 KB (casi todo es la imagen <code>data:</code> repetida)</td></tr>
+    <tr><td>PDF generado</td><td>~300 KB, fuentes incrustadas como subconjunto</td></tr>
+    <tr><td>PHP, primera generación</td><td>~6–9 s (registra las fuentes en la caché de Dompdf)</td></tr>
+    <tr><td>PHP, generaciones siguientes</td><td>~2–3 s, dominados por los filtros de imagen en GD</td></tr>
+  </tbody>
+</table>
+<ul>
+  <li>Los filtros (<code>blur</code>, <code>drop-shadow</code>) son la parte más costosa. Sin ellos, las páginas de texto y tablas tardan fracciones de segundo.</li>
+  <li>La misma imagen con el mismo filtro y tamaño se procesa una sola vez por PDF (hay caché).</li>
+  <li>Para documentos grandes, envía las imágenes por URL y usa un <code>ImageResolver</code>, en lugar de repetir <code>data:</code> en el JSON.</li>
+</ul>
+
+<!-- ───────────────────────── -->
+<h2 id="troubleshooting">Solución de problemas</h2>
+<table>
+  <thead><tr><th>Síntoma</th><th>Causa probable y solución</th></tr></thead>
+  <tbody>
+    <tr><td>Texto con una fuente distinta a la de la pantalla</td><td>No existe <code>fonts/&lt;familia&gt;-&lt;peso&gt;.ttf</code> para la primera familia de <code>font-family</code>. Agrega el TTF o usa una de las incluidas.</td></tr>
+    <tr><td>Palabras apretadas o demasiado espaciadas</td><td>El navegador midió con otra fuente (la de reserva o la del sistema). Carga la misma fuente con <code>@font-face</code>.</td></tr>
+    <tr><td>La imagen no aparece</td><td>El <code>src</code> no es <code>data:</code> y no hay <code>ImageResolver</code>, o el resolvedor devolvió <code>null</code>, o la imagen superó los límites.</td></tr>
+    <tr><td>Contenido cortado al final de la página</td><td>No hay paginación automática. Divide en más páginas.</td></tr>
+    <tr><td>Los estilos de tu aplicación se "filtran" a la página</td><td>El contenedor hereda del <code>&lt;body&gt;</code>. Limita el CSS de la página y define fuente, color y <code>line-height</code> en la raíz.</td></tr>
+    <tr><td><code>Dompdf is not installed</code></td><td>Ejecuta <code>composer install</code> o carga <code>vendor/autoload.php</code> antes.</td></tr>
+    <tr><td><code>Options::$tempDir must be an existing writable directory</code></td><td>Crea la carpeta y da permiso de escritura al usuario de PHP.</td></tr>
+    <tr><td>Error 500 sin detalle</td><td>Es intencional. Registra <code>$e-&gt;getPrevious()</code> en tu log.</td></tr>
+  </tbody>
+</table>
+
+<!-- ───────────────────────── -->
+<h2 id="dependencies">Dependencias</h2>
+<h3>En producción</h3>
+<table>
+  <thead><tr><th>Paquete</th><th>Versión</th><th>Licencia</th><th>Para qué sirve</th></tr></thead>
+  <tbody>
+    <tr><td><a href="https://github.com/dompdf/dompdf">dompdf/dompdf</a></td><td>^3.1 (probado 3.1.6)</td><td>LGPL-2.1</td><td>Solo el <code>Cpdf</code> (escritura del PDF), las métricas y el registro de fuentes. El parser de HTML/CSS de Dompdf <strong>no</strong> se usa.</td></tr>
+    <tr><td><a href="https://github.com/dompdf/php-font-lib">dompdf/php-font-lib</a></td><td>1.0.2</td><td>LGPL-2.1-or-later</td><td>Lee los TTF y genera el subconjunto incrustado en el PDF.</td></tr>
+    <tr><td><a href="https://github.com/dompdf/php-svg-lib">dompdf/php-svg-lib</a></td><td>1.0.2</td><td>LGPL-3.0-or-later</td><td>Dependencia de Dompdf (no se usa directamente).</td></tr>
+    <tr><td><a href="https://github.com/Masterminds/html5-php">masterminds/html5</a></td><td>2.11.0</td><td>MIT</td><td>Dependencia de Dompdf (no se usa directamente).</td></tr>
+    <tr><td><a href="https://github.com/MyIntervals/PHP-CSS-Parser">sabberworm/php-css-parser</a></td><td>9.5.0</td><td>MIT</td><td>Dependencia de Dompdf (no se usa directamente).</td></tr>
+    <tr><td>Extensión <code>gd</code></td><td>—</td><td>PHP</td><td>Decodificación, reducción, filtros y sombras de imágenes.</td></tr>
+    <tr><td>Extensión <code>mbstring</code></td><td>—</td><td>PHP</td><td>Texto UTF-8.</td></tr>
+    <tr><td>Fuentes en <code>fonts/</code></td><td>—</td><td>SIL OFL 1.1</td><td>Incrustadas en los PDF. Avisos en <code>fonts/OFL.txt</code>.</td></tr>
+  </tbody>
+</table>
+<p>En el navegador: <strong>ninguna dependencia</strong> (<code>js/jh2pdf.js</code> es JavaScript puro).</p>
+<h3>Solo en desarrollo</h3>
+<table>
+  <thead><tr><th>Herramienta</th><th>Licencia</th><th>Para qué sirve</th></tr></thead>
+  <tbody>
+    <tr><td>Composer</td><td>MIT</td><td>Instalar Dompdf y ejecutar <code>composer test</code>.</td></tr>
+    <tr><td>Python 3 + <code>fonttools</code> + <code>brotli</code></td><td>MIT</td><td><code>tools/generate-fonts.py</code>: generar TTF estáticos a partir de fuentes variables.</td></tr>
+  </tbody>
+</table>
+<div class="note"><strong>LGPL en la práctica:</strong> Dompdf se usa como biblioteca, sin modificaciones, instalado con Composer. Eso es compatible con la licencia MIT
+  de Jh2Pdf y con el uso en software cerrado. La LGPL solo exige que, si <em>modificas</em> Dompdf y lo distribuyes, publiques esas modificaciones,
+  y que el usuario pueda cambiar la versión de Dompdf (algo que Composer ya permite).</div>
+<div class="note ok"><strong>Nombres reservados de fuentes (RFN):</strong> Lora, Merriweather, Playfair Display y Source Serif 4 (nombre reservado "Source") tienen "Reserved Font Name".
+  Nuestras instancias estáticas son versiones modificadas (generadas a partir de las variables), y la OFL prohíbe que las versiones modificadas usen el nombre reservado.
+  Por eso vienen renombradas como <strong>Jh Serif</strong>, <strong>Jh Serif Text</strong>, <strong>Jh Display</strong> y <strong>Jh Serif Book</strong>, con los avisos de copyright originales en <code>fonts/OFL.txt</code>.
+  Si generas instancias nuevas de una fuente con RFN, renómbralas también.</div>
+
+<!-- ───────────────────────── -->
+<h2 id="license">Licencia</h2>
+<p>El código de Jh2Pdf está bajo la <a href="../LICENSE">licencia MIT</a>, © 2026 Geison Quevedo. Cualquier persona puede usarlo, copiarlo, modificarlo, fusionarlo, publicarlo,
+  distribuirlo, sublicenciarlo y venderlo, incluso en proyectos cerrados, <strong>siempre que mantenga el aviso de copyright y el texto de la licencia</strong>.
+  Las fuentes (OFL) y Dompdf (LGPL) tienen sus propias licencias, descritas en <a href="#dependencies">Dependencias</a>.</p>
+
+<!-- ───────────────────────── -->
+<h2 id="structure">Estructura</h2>
+<pre><code>jh2pdf/
+├── LICENSE               MIT
+├── README.md             resumen e inicio rápido
+├── composer.json         paquete (autoload PSR-4: Jh2Pdf\ → src/)
+├── autoload.php          autoloader para quien no usa Composer
+├── src/                  PHP: Renderer, Options, Layout, ImageResolver, DataUriImageResolver,
+│                              Images, ImageFilter, Fonts, Marks, Svg, Exception
+├── js/jh2pdf.js          extractor de diseño (módulo ES, sin dependencias)
+├── fonts/                TTF estáticos (OFL) + OFL.txt
+├── resources/marks.css   dibujos SVG de las marcas a mano
+├── docs/                 esta documentación (en, pt-BR, es) + format.md (el formato del JSON)
+├── demo/                 galería de ejemplos (index.html, pages.css, fonts.css, pdf.php)
+├── examples/minimal/     el ejemplo completo más pequeño
+├── tests/run.php         pruebas (php tests/run.php o composer test)
+└── tools/generate-fonts.py   genera los TTF a partir de fuentes variables</code></pre>
+
+<!-- ───────────────────────── -->
+<h2 id="contributing">Cómo contribuir</h2>
+<ul>
+  <li><strong>Pruebas:</strong> <code>composer install</code> y <code>composer test</code>. No hay framework de pruebas, solo <code>tests/run.php</code>.</li>
+  <li><strong>Criterio de calidad:</strong> <em>quedar igual que la pantalla</em>. Genera el PDF desde el navegador (Imprimir → Guardar como PDF) y con esta biblioteca y compáralos
+    lado a lado, ampliando (por ejemplo, con PyMuPDF: <code>page.get_pixmap(dpi=200)</code>).</li>
+  <li><strong>Nueva operación</strong> (por ejemplo, degradado radial): (1) el extractor en <code>js/jh2pdf.js</code> emite la operación; (2) <code>Layout::OPS</code> recibe la letra;
+    (3) <code>Renderer::render</code> recibe el <code>case</code>; (4) documéntala en <code>docs/format.md</code>; (5) pruébala en <code>tests/run.php</code>.
+    <strong>Valida cada campo nuevo</strong>: es una entrada hostil.</li>
+  <li><strong>Estilo:</strong> PHP 8.1 con <code>declare(strict_types=1)</code>, sin dependencias aparte de Dompdf. JS sin dependencias, con nombres de nivel superior con el prefijo <code>pl</code>.</li>
+  <li>Las contribuciones se aceptan bajo la misma licencia del proyecto (MIT).</li>
+</ul>
+</main>
+</div>
+</body>
+</html>

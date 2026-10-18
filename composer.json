@@ -1,0 +1,32 @@
+{
+    "name": "jh2pdf/jh2pdf",
+    "description": "HTML para PDF sem navegador no servidor: o navegador de quem exporta mede o layout, o PHP só desenha o PDF.",
+    "type": "library",
+    "keywords": [
+        "pdf",
+        "html-to-pdf",
+        "dompdf",
+        "layout",
+        "shared-hosting"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Geison Quevedo"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "ext-gd": "*",
+        "ext-mbstring": "*",
+        "dompdf/dompdf": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jh2Pdf\\": "src/"
+        }
+    },
+    "scripts": {
+        "test": "php tests/run.php"
+    }
+}

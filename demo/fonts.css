@@ -1,0 +1,57 @@
+/* @font-face de cada TTF de ../fonts: o navegador precisa medir com as MESMAS fontes que o PDF embute. Gerado a partir da pasta fonts/. */
+@font-face { font-family: 'Barlow Condensed'; font-weight: 400; font-style: normal; font-display: block; src: url('../fonts/barlow-condensed-400.ttf') format('truetype'); }
+@font-face { font-family: 'Barlow Condensed'; font-weight: 500; font-style: normal; font-display: block; src: url('../fonts/barlow-condensed-500.ttf') format('truetype'); }
+@font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-style: normal; font-display: block; src: url('../fonts/barlow-condensed-600.ttf') format('truetype'); }
+@font-face { font-family: 'Barlow Condensed'; font-weight: 700; font-style: normal; font-display: block; src: url('../fonts/barlow-condensed-700.ttf') format('truetype'); }
+@font-face { font-family: 'DM Sans'; font-weight: 400; font-style: italic; font-display: block; src: url('../fonts/dm-sans-400-italic.ttf') format('truetype'); }
+@font-face { font-family: 'DM Sans'; font-weight: 400; font-style: normal; font-display: block; src: url('../fonts/dm-sans-400.ttf') format('truetype'); }
+@font-face { font-family: 'DM Sans'; font-weight: 500; font-style: italic; font-display: block; src: url('../fonts/dm-sans-500-italic.ttf') format('truetype'); }
+@font-face { font-family: 'DM Sans'; font-weight: 500; font-style: normal; font-display: block; src: url('../fonts/dm-sans-500.ttf') format('truetype'); }
+@font-face { font-family: 'DM Sans'; font-weight: 600; font-style: italic; font-display: block; src: url('../fonts/dm-sans-600-italic.ttf') format('truetype'); }
+@font-face { font-family: 'DM Sans'; font-weight: 600; font-style: normal; font-display: block; src: url('../fonts/dm-sans-600.ttf') format('truetype'); }
+@font-face { font-family: 'DM Sans'; font-weight: 700; font-style: italic; font-display: block; src: url('../fonts/dm-sans-700-italic.ttf') format('truetype'); }
+@font-face { font-family: 'DM Sans'; font-weight: 700; font-style: normal; font-display: block; src: url('../fonts/dm-sans-700.ttf') format('truetype'); }
+@font-face { font-family: 'Fira Code'; font-weight: 400; font-style: normal; font-display: block; src: url('../fonts/fira-code-400.ttf') format('truetype'); }
+@font-face { font-family: 'Fira Code'; font-weight: 500; font-style: normal; font-display: block; src: url('../fonts/fira-code-500.ttf') format('truetype'); }
+@font-face { font-family: 'Fira Code'; font-weight: 600; font-style: normal; font-display: block; src: url('../fonts/fira-code-600.ttf') format('truetype'); }
+@font-face { font-family: 'Fira Code'; font-weight: 700; font-style: normal; font-display: block; src: url('../fonts/fira-code-700.ttf') format('truetype'); }
+@font-face { font-family: 'Inter'; font-weight: 400; font-style: normal; font-display: block; src: url('../fonts/inter-400.ttf') format('truetype'); }
+@font-face { font-family: 'Inter'; font-weight: 500; font-style: normal; font-display: block; src: url('../fonts/inter-500.ttf') format('truetype'); }
+@font-face { font-family: 'Inter'; font-weight: 600; font-style: normal; font-display: block; src: url('../fonts/inter-600.ttf') format('truetype'); }
+@font-face { font-family: 'Inter'; font-weight: 700; font-style: normal; font-display: block; src: url('../fonts/inter-700.ttf') format('truetype'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-style: normal; font-display: block; src: url('../fonts/jetbrains-mono-400.ttf') format('truetype'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 500; font-style: normal; font-display: block; src: url('../fonts/jetbrains-mono-500.ttf') format('truetype'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 600; font-style: normal; font-display: block; src: url('../fonts/jetbrains-mono-600.ttf') format('truetype'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 700; font-style: normal; font-display: block; src: url('../fonts/jetbrains-mono-700.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Display'; font-weight: 400; font-style: normal; font-display: block; src: url('../fonts/jh-display-400.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Display'; font-weight: 500; font-style: normal; font-display: block; src: url('../fonts/jh-display-500.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Display'; font-weight: 600; font-style: normal; font-display: block; src: url('../fonts/jh-display-600.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Display'; font-weight: 700; font-style: normal; font-display: block; src: url('../fonts/jh-display-700.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Serif'; font-weight: 400; font-style: italic; font-display: block; src: url('../fonts/jh-serif-400-italic.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Serif'; font-weight: 400; font-style: normal; font-display: block; src: url('../fonts/jh-serif-400.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Serif'; font-weight: 500; font-style: italic; font-display: block; src: url('../fonts/jh-serif-500-italic.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Serif'; font-weight: 500; font-style: normal; font-display: block; src: url('../fonts/jh-serif-500.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Serif'; font-weight: 600; font-style: italic; font-display: block; src: url('../fonts/jh-serif-600-italic.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Serif'; font-weight: 600; font-style: normal; font-display: block; src: url('../fonts/jh-serif-600.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Serif'; font-weight: 700; font-style: italic; font-display: block; src: url('../fonts/jh-serif-700-italic.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Serif'; font-weight: 700; font-style: normal; font-display: block; src: url('../fonts/jh-serif-700.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Serif Book'; font-weight: 400; font-style: normal; font-display: block; src: url('../fonts/jh-serif-book-400.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Serif Book'; font-weight: 500; font-style: normal; font-display: block; src: url('../fonts/jh-serif-book-500.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Serif Book'; font-weight: 600; font-style: normal; font-display: block; src: url('../fonts/jh-serif-book-600.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Serif Book'; font-weight: 700; font-style: normal; font-display: block; src: url('../fonts/jh-serif-book-700.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Serif Text'; font-weight: 400; font-style: normal; font-display: block; src: url('../fonts/jh-serif-text-400.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Serif Text'; font-weight: 500; font-style: normal; font-display: block; src: url('../fonts/jh-serif-text-500.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Serif Text'; font-weight: 600; font-style: normal; font-display: block; src: url('../fonts/jh-serif-text-600.ttf') format('truetype'); }
+@font-face { font-family: 'Jh Serif Text'; font-weight: 700; font-style: normal; font-display: block; src: url('../fonts/jh-serif-text-700.ttf') format('truetype'); }
+@font-face { font-family: 'Montserrat'; font-weight: 400; font-style: normal; font-display: block; src: url('../fonts/montserrat-400.ttf') format('truetype'); }
+@font-face { font-family: 'Montserrat'; font-weight: 500; font-style: normal; font-display: block; src: url('../fonts/montserrat-500.ttf') format('truetype'); }
+@font-face { font-family: 'Montserrat'; font-weight: 600; font-style: normal; font-display: block; src: url('../fonts/montserrat-600.ttf') format('truetype'); }
+@font-face { font-family: 'Montserrat'; font-weight: 700; font-style: normal; font-display: block; src: url('../fonts/montserrat-700.ttf') format('truetype'); }
+@font-face { font-family: 'Nunito'; font-weight: 400; font-style: normal; font-display: block; src: url('../fonts/nunito-400.ttf') format('truetype'); }
+@font-face { font-family: 'Nunito'; font-weight: 500; font-style: normal; font-display: block; src: url('../fonts/nunito-500.ttf') format('truetype'); }
+@font-face { font-family: 'Nunito'; font-weight: 600; font-style: normal; font-display: block; src: url('../fonts/nunito-600.ttf') format('truetype'); }
+@font-face { font-family: 'Nunito'; font-weight: 700; font-style: normal; font-display: block; src: url('../fonts/nunito-700.ttf') format('truetype'); }
+@font-face { font-family: 'Open Sans'; font-weight: 400; font-style: normal; font-display: block; src: url('../fonts/open-sans-400.ttf') format('truetype'); }
+@font-face { font-family: 'Open Sans'; font-weight: 500; font-style: normal; font-display: block; src: url('../fonts/open-sans-500.ttf') format('truetype'); }
+@font-face { font-family: 'Open Sans'; font-weight: 600; font-style: normal; font-display: block; src: url('../fonts/open-sans-600.ttf') format('truetype'); }
+@font-face { font-family: 'Open Sans'; font-weight: 700; font-style: normal; font-display: block; src: url('../fonts/open-sans-700.ttf') format('truetype'); }
