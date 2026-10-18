@@ -4,7 +4,7 @@
 
 **HTML para PDF fiel ao navegador, sem navegador no servidor.** Funciona em hospedagem compartilhada (só PHP + GD).
 
-📖 **[Documentação completa](docs/pt-BR.html)** · 🎨 **[Galeria de exemplos](demo/index.html)** (tabelas, degradês, sombras, imagens com filtros, listas, fatura) · 📄 [Licença MIT](LICENSE)
+📖 **[Documentação completa](docs/pt-BR.html)** · 🎨 **[Galeria de exemplos](demo/pt-BR.html)** (tabelas, degradês, sombras, imagens com filtros, listas, fatura) · 📄 [Licença MIT](LICENSE)
 
 ## Por que existe
 
@@ -209,7 +209,7 @@ contra o **navegador do exportador** (XSS clássico: `<img onerror=…>`). Defes
 
 ## O que (ainda) não é desenhado
 
-Cobre bem documentos, relatórios, tabelas e slides (veja a [galeria](demo/index.html)). Hoje **não** saem iguais no PDF:
+Cobre bem documentos, relatórios, tabelas e slides (veja a [galeria](demo/pt-BR.html)). Hoje **não** saem iguais no PDF:
 
 - `box-shadow` desfocado (o sem desfoque, interno ou externo, é desenhado), `text-shadow`, `background-image: url()`, `transform`, `clip-path`, SVG/`<canvas>` inline;
 - `linear-gradient` sai na vertical ou na horizontal (diagonais viram a direção mais próxima); `radial-gradient`, degradês repetidos ou em camadas, não;

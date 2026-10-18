@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jh2Pdf — ejemplos</title>
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="../resources/marks.css">
+<link rel="stylesheet" href="pages.css">
+<style>
+  /* ── interface da galeria (não vai para o PDF) ── */
+  :root { --bg: #f1f2f7; --panel: #fff; --ink: #161827; --muted: #646a7e; --line: #e2e4ec; --brand: #4f46e5; --s: .5; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 'DM Sans', system-ui, sans-serif; }
+  a { color: var(--brand); }
+  .top { position: sticky; top: 0; z-index: 10; display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+         padding: 14px 28px; background: rgba(255,255,255,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  .brand { display: flex; align-items: center; gap: 10px; font: 700 20px 'Montserrat'; }
+  .brand i { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(#22d3ee, #4f46e5); }
+  .top nav { margin-left: auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .btn { appearance: none; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 10px; padding: 8px 14px;
+         font: 600 13.5px 'DM Sans'; cursor: pointer; text-decoration: none; display: inline-flex; gap: 6px; align-items: center; }
+  .btn:hover { border-color: #c5c8d6; }
+  .btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .btn.primary:hover { background: #4338ca; }
+  .btn[disabled] { opacity: .55; cursor: progress; }
+  .intro { max-width: 1240px; margin: 28px auto 6px; padding: 0 28px; }
+  .intro h1 { font: 700 30px/1.2 'Jh Display'; margin: 0 0 6px; }
+  .intro p { margin: 0; color: var(--muted); max-width: 820px; }
+  .langs { display: flex; gap: 2px; font-size: 12.5px; }
+  .langs a, .langs b { padding: 3px 8px; border-radius: 99px; text-decoration: none; color: var(--muted); }
+  .langs b { background: var(--ink); color: #fff; }
+  .static-note { margin-top: 8px !important; font-size: 13.5px; }
+  .how { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; font-size: 13px; }
+  .how span { background: #fff; border: 1px solid var(--line); border-radius: 99px; padding: 4px 12px; }
+  .grid { max-width: 1240px; margin: 0 auto; padding: 22px 28px 60px; display: grid; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); gap: 22px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .card h2 { margin: 0; font: 700 17px 'Montserrat'; }
+  .card > p { margin: 0; color: var(--muted); font-size: 13.5px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chips code { font: 11px 'JetBrains Mono'; background: #eef0ff; color: #3730a3; padding: 2px 7px; border-radius: 6px; }
+  .preview { width: calc(794px * var(--s)); height: calc(1123px * var(--s)); overflow: hidden; align-self: center;
+             border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 8px 24px rgba(20,24,60,.12); background: #fff; }
+  .preview > .page { transform: scale(var(--s)); transform-origin: 0 0; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .stats { font: 11.5px 'JetBrains Mono'; color: var(--muted); }
+  .viewer { position: fixed; inset: 0; z-index: 50; background: rgba(10,12,30,.6); display: none; padding: 24px; }
+  .viewer.open { display: flex; flex-direction: column; }
+  .viewer header { display: flex; gap: 10px; align-items: center; color: #fff; margin-bottom: 12px; flex-wrap: wrap; }
+  .viewer header b { font: 600 15px 'DM Sans'; margin-right: auto; }
+  .viewer iframe { flex: 1; width: 100%; border: 0; border-radius: 10px; background: #fff; }
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #11142a; color: #fff; padding: 10px 18px;
+           border-radius: 10px; font-size: 13.5px; display: none; z-index: 60; }
+  @media (max-width: 520px) { :root { --s: .4; } .grid { grid-template-columns: 1fr; padding: 16px; } .top, .intro { padding-left: 16px; padding-right: 16px; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><i></i> Jh2Pdf</div>
+  <nav>
+    <span class="langs"><a href="index.html" hreflang="en">EN</a><a href="pt-BR.html" hreflang="pt-BR">PT</a><b>ES</b></span>
+    <a class="btn" href="../docs/es.html">Documentación</a>
+    <a class="btn" href="pdf/es/all.pdf" target="_blank" rel="noopener">PDF listo</a>
+    <button class="btn primary" id="all">Generar PDF con las 7 páginas</button>
+  </nav>
+</header>
+
+<section class="intro">
+  <h1>Galería de ejemplos</h1>
+  <p>Cada tarjeta es una página A4 hecha solo con HTML y CSS. El navegador mide el diseño, <code>js/jh2pdf.js</code> lo convierte en operaciones
+    de dibujo y PHP (<code>demo/pdf.php</code>) dibuja el PDF. Genera el PDF y compáralo con la vista previa: deben coincidir.</p>
+  <p class="static-note">Generar en vivo requiere un servidor con PHP. En un sitio estático (como GitHub Pages), los botones abren el <strong>PDF listo</strong>,
+    generado antes desde esta misma página con Jh2Pdf.</p>
+  <div class="how"><span>1. HTML + CSS</span><span>2. <code>extractLayout()</code> en el navegador</span><span>3. POST del JSON</span><span>4. <code>Renderer::render()</code> → PDF</span></div>
+</section>
+
+<main class="grid">
+
+<!-- ═════════════════ 1. Tipografia ═════════════════ -->
+<article class="card">
+  <h2>1 · Portada y tipografía</h2>
+  <p>Fondo degradado, 12 familias incrustadas, pesos de 400 a 700, cursiva, mayúsculas espaciadas, subrayado y tachado.</p>
+  <div class="chips"><code>linear-gradient</code><code>@font-face</code><code>text-transform</code><code>letter-spacing</code><code>text-decoration</code></div>
+  <div class="preview"><div class="page">
+    <div class="hero">
+      <div class="eyebrow">Informe anual · 2026</div>
+      <h1>Lorem ipsum dolor sit amet, consectetur</h1>
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa.</p>
+      <div class="by"><span>Lorem Ipsum</span> Dolor Sit Amet · 17 de octubre</div>
+    </div>
+    <div class="cols">
+      <div>
+        <p>Lorem ipsum dolor sit amet, <strong>consectetur adipiscing elit</strong>. Integer nec odio. <em>Praesent libero</em>. Sed cursus ante dapibus
+          diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta.</p>
+        <p>Mauris massa. Vestibulum lacinia arcu eget nulla. <u>Class aptent taciti sociosqu</u> ad litora torquent per conubia nostra, per inceptos
+          himenaeos. Curabitur sodales ligula in libero. <s>Sed dignissim lacinia nunc</s>.</p>
+      </div>
+      <div>
+        <p>Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis. Sed convallis tristique sem. Proin ut ligula
+          vel nunc egestas porttitor. Llama a <span class="mono">extractLayout(pages)</span> y envía el resultado.</p>
+        <p>Morbi lectus risus, iaculis vel, suscipit quis, luctus non, massa. Fusce ac turpis quis ligula lacinia aliquet. Mauris ipsum.</p>
+      </div>
+    </div>
+    <blockquote>“Nulla facilisi. Aenean nec eros. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.”
+      <cite>— Quisque Volutpat, Condimentum Velit</cite></blockquote>
+    <h3 class="sec">Estilos de texto</h3>
+    <div class="styles">
+      <div style="font-weight:400">Regular 400</div><div style="font-weight:500">Medium 500</div><div style="font-weight:600">Semibold 600</div>
+      <div style="font-weight:700">Bold 700</div><div style="font-style:italic">Cursiva lorem</div><div class="up">Mayúsculas</div>
+      <div style="color:#4f46e5">Color de marca</div><div style="opacity:.45">Opacidad 45%</div><div style="font-size:16px;letter-spacing:.3em">E S P A C I O</div>
+    </div>
+    <h3 class="sec">Fuentes incluidas <small>SIL Open Font License</small></h3>
+    <div class="fonts">
+      <div style="font-family:'Barlow Condensed'">Lorem ipsum<small>Barlow Condensed</small></div>
+      <div style="font-family:'DM Sans'">Lorem ipsum<small>DM Sans</small></div>
+      <div style="font-family:'Fira Code'">Lorem ipsum<small>Fira Code</small></div>
+      <div style="font-family:'Inter'">Lorem ipsum<small>Inter</small></div>
+      <div style="font-family:'JetBrains Mono'">Lorem ipsum<small>JetBrains Mono</small></div>
+      <div style="font-family:'Jh Serif'">Lorem ipsum<small>Jh Serif</small></div>
+      <div style="font-family:'Jh Serif Text'">Lorem ipsum<small>Jh Serif Text</small></div>
+      <div style="font-family:'Montserrat'">Lorem ipsum<small>Montserrat</small></div>
+      <div style="font-family:'Nunito'">Lorem ipsum<small>Nunito</small></div>
+      <div style="font-family:'Open Sans'">Lorem ipsum<small>Open Sans</small></div>
+      <div style="font-family:'Jh Display'">Lorem ipsum<small>Jh Display</small></div>
+      <div style="font-family:'Jh Serif Book'">Lorem ipsum<small>Jh Serif Book</small></div>
+    </div>
+    <div class="pfoot"><span><b>Jh2Pdf</b> · ejemplos</span><span>Página 1 de 7</span></div>
+  </div></div>
+  <div class="actions"><button class="btn primary" data-pdf>PDF de esta página</button><button class="btn" data-json>Ver JSON</button><span class="stats"></span></div>
+</article>
+
+<!-- ═════════════════ 2. Tabela relatório ═════════════════ -->
+<article class="card">
+  <h2>2 · Tablas de informe</h2>
+  <p>Encabezado degradado, filas cebra, esquinas redondeadas con <code>overflow: hidden</code>, insignias, barras de progreso y tabla con grupos (<code>colspan</code>/<code>rowspan</code>).</p>
+  <div class="chips"><code>border-collapse</code><code>:nth-child(even)</code><code>overflow: hidden</code><code>colspan</code><code>tabular-nums</code></div>
+  <div class="preview"><div class="page">
+    <div class="eyebrow">Tablas</div>
+    <h1 class="ptitle">Lorem ipsum por región</h1>
+    <p class="lead">Donec sollicitudin molestie malesuada. Vivamus suscipit tortor eget felis porttitor volutpat.</p>
+    <div class="kpis">
+      <div class="kpi dark"><span>Ingresos totales</span><b>$4,82 M</b><span>+12,4% en el año</span></div>
+      <div class="kpi"><span>Clientes activos</span><b>18.204</b><i class="up-ok">+8,1%</i></div>
+      <div class="kpi"><span>Ticket medio</span><b>$264</b><i class="up-ok">+3,9%</i></div>
+      <div class="kpi"><span>Cancelaciones</span><b>2,7%</b><i class="down">+0,4 p.p.</i></div>
+    </div>
+    <h3 class="sec">Desempeño por unidad</h3>
+    <div class="tbl-wrap">
+      <table class="t1">
+        <thead><tr><th>Unidad</th><th>Responsable</th><th>Meta</th><th class="num">Ingresos</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td>Lorem Norte</td><td>Ipsum Dolor</td><td><div class="bar"><i style="width:92%"></i></div></td><td class="num">$912.400</td><td><span class="pill ok">En meta</span></td></tr>
+          <tr><td>Consectetur Sur</td><td>Amet Elit</td><td><div class="bar"><i style="width:78%"></i></div></td><td class="num">$801.150</td><td><span class="pill ok">En meta</span></td></tr>
+          <tr><td>Adipiscing Este</td><td>Sed Tempor</td><td><div class="bar"><i style="width:61%"></i></div></td><td class="num">$640.020</td><td><span class="pill warn">En riesgo</span></td></tr>
+          <tr><td>Eiusmod Oeste</td><td>Labore Magna</td><td><div class="bar"><i style="width:84%"></i></div></td><td class="num">$1.020.900</td><td><span class="pill ok">En meta</span></td></tr>
+          <tr><td>Incididunt Centro</td><td>Ut Enim</td><td><div class="bar"><i style="width:38%"></i></div></td><td class="num">$402.310</td><td><span class="pill bad">Por debajo</span></td></tr>
+          <tr><td>Veniam Litoral</td><td>Quis Nostrud</td><td><div class="bar"><i style="width:70%"></i></div></td><td class="num">$713.880</td><td><span class="pill warn">En riesgo</span></td></tr>
+          <tr><td>Exercitation Sierra</td><td>Ullamco Laboris</td><td><div class="bar"><i style="width:55%"></i></div></td><td class="num">$329.640</td><td><span class="pill warn">En riesgo</span></td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="3">Total</td><td class="num">$4.820.300</td><td></td></tr></tfoot>
+      </table>
+    </div>
+    <h3 class="sec">Comparativo trimestral <small>colspan, rowspan y columna destacada</small></h3>
+    <table class="t2">
+      <thead>
+        <tr><th rowspan="2">Indicador</th><th colspan="2">2025</th><th colspan="2">2026</th><th rowspan="2">Var.</th></tr>
+        <tr><th>T1</th><th>T2</th><th>T1</th><th>T2</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="grp" colspan="6">Lorem ipsum</td></tr>
+        <tr><th>Dolor sit</th><td>1.204</td><td>1.318</td><td>1.402</td><td class="hl">1.588</td><td>+20,5%</td></tr>
+        <tr><th>Amet consectetur</th><td>842</td><td>880</td><td>915</td><td class="hl">1.002</td><td>+13,9%</td></tr>
+        <tr><td class="grp" colspan="6">Adipiscing elit</td></tr>
+        <tr><th>Sed do eiusmod</th><td>63%</td><td>66%</td><td>69%</td><td class="hl">72%</td><td>+6 p.p.</td></tr>
+        <tr><th>Tempor incididunt</th><td>4,1</td><td>4,3</td><td>4,4</td><td class="hl">4,6</td><td>+7,0%</td></tr>
+        <tr><th>Labore et dolore</th><td>17 d</td><td>15 d</td><td>14 d</td><td class="hl">12 d</td><td>−20,0%</td></tr>
+      </tbody>
+    </table>
+    <div class="pfoot"><span><b>Jh2Pdf</b> · ejemplos</span><span>Página 2 de 7</span></div>
+  </div></div>
+  <div class="actions"><button class="btn primary" data-pdf>PDF de esta página</button><button class="btn" data-json>Ver JSON</button><span class="stats"></span></div>
+</article>
+
+<!-- ═════════════════ 3. Planos ═════════════════ -->
+<article class="card">
+  <h2>3 · Planes y tabla comparativa</h2>
+  <p>Tarjetas con sombra sólida (sin desenfoque), marcadores hechos con un <code>::before</code> vacío y tabla de funciones con columna destacada.</p>
+  <div class="chips"><code>box-shadow 6px 6px 0</code><code>::before { content: '' }</code><code>float</code><code>border-radius</code></div>
+  <div class="preview"><div class="page">
+    <div class="eyebrow">Tablas</div>
+    <h1 class="ptitle">Elige tu plan lorem</h1>
+    <p class="lead">Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum aenean imperdiet etiam ultricies nisi vel augue.</p>
+    <div class="plans">
+      <div class="plan">
+        <header><h3>Lorem</h3><p>Para empezar</p></header>
+        <div class="price">$0 <small>/mes</small></div>
+        <ul><li>3 documentos ipsum</li><li>Exportación a PDF</li><li>1 usuario</li><li>Soporte por correo</li></ul>
+      </div>
+      <div class="plan best">
+        <header><span class="badge">Popular</span><h3>Ipsum</h3><p>Para equipos</p></header>
+        <div class="price">$49 <small>/mes</small></div>
+        <ul><li>Documentos ilimitados</li><li>Marca propia</li><li>10 usuarios</li><li>Fuentes personalizadas</li><li>Soporte prioritario</li></ul>
+      </div>
+      <div class="plan">
+        <header><h3>Dolor</h3><p>Para empresas</p></header>
+        <div class="price">$199 <small>/mes</small></div>
+        <ul><li>Todo lo de Ipsum</li><li>Usuarios ilimitados</li><li>SSO y auditoría</li><li>Gerente de cuenta</li></ul>
+      </div>
+    </div>
+    <h3 class="sec">Comparativa de funciones</h3>
+    <table class="t3">
+      <thead><tr><th>Función</th><th>Lorem</th><th class="col-best">Ipsum</th><th>Dolor</th></tr></thead>
+      <tbody>
+        <tr><th>Sit amet consectetur</th><td><span class="yes"></span></td><td class="col-best"><span class="yes"></span></td><td><span class="yes"></span></td></tr>
+        <tr><th>Adipiscing elit sed</th><td><span class="yes"></span></td><td class="col-best"><span class="yes"></span></td><td><span class="yes"></span></td></tr>
+        <tr><th>Eiusmod tempor</th><td><span class="no"></span></td><td class="col-best"><span class="yes"></span></td><td><span class="yes"></span></td></tr>
+        <tr><th>Incididunt ut labore</th><td><span class="no"></span></td><td class="col-best"><span class="yes"></span></td><td><span class="yes"></span></td></tr>
+        <tr><th>Magna aliqua enim</th><td>1</td><td class="col-best">10</td><td>Ilimitado</td></tr>
+        <tr><th>Minim veniam quis</th><td><span class="no"></span></td><td class="col-best"><span class="no"></span></td><td><span class="yes"></span></td></tr>
+        <tr><th>Nostrud exercitation</th><td>Correo</td><td class="col-best">Prioritario</td><td>Dedicado</td></tr>
+        <tr><th>Ullamco laboris nisi</th><td><span class="no"></span></td><td class="col-best"><span class="no"></span></td><td><span class="yes"></span></td></tr>
+      </tbody>
+    </table>
+    <div class="pfoot"><span><b>Jh2Pdf</b> · ejemplos</span><span>Página 3 de 7</span></div>
+  </div></div>
+  <div class="actions"><button class="btn primary" data-pdf>PDF de esta página</button><button class="btn" data-json>Ver JSON</button><span class="stats"></span></div>
+</article>
+
+<!-- ═════════════════ 4. Caixas e efeitos ═════════════════ -->
+<article class="card">
+  <h2>4 · Cajas y efectos</h2>
+  <p>Degradados verticales y horizontales con varias paradas, radios por esquina, bordes por lado, sombras sólidas apiladas, sombra interior, opacidad y recorte redondeado.</p>
+  <div class="chips"><code>linear-gradient</code><code>border-*-width</code><code>box-shadow inset</code><code>opacity</code><code>overflow: hidden</code></div>
+  <div class="preview"><div class="page">
+    <div class="eyebrow">Efectos</div>
+    <h1 class="ptitle">Cajas, degradados y sombras</h1>
+    <p class="lead">Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus.</p>
+    <h3 class="sec">Degradados y sombras</h3>
+    <div class="tiles">
+      <div class="tile g1"><b>Vertical</b><span>linear-gradient(#a855f7, #4f46e5)</span></div>
+      <div class="tile g2"><b>Horizontal</b><span>to right, #f97316, #ec4899</span></div>
+      <div class="tile g3"><b>3 paradas</b><span>#0ea5e9, #22c55e 50%, #eab308</span></div>
+      <div class="tile g4"><b>Suave con borde</b><span>#ffffff → #e0e7ff</span></div>
+      <div class="tile g5"><b>Esquinas asimétricas</b><span>4px 40px 4px 40px</span></div>
+      <div class="tile g6"><b>Sombras apiladas</b><span>8px 8px 0, 16px 16px 0</span></div>
+    </div>
+    <h3 class="sec">Formas con CSS</h3>
+    <div class="shapes">
+      <div class="shape s-circle"></div><div class="shape s-pill"></div><div class="shape s-leaf"></div>
+      <div class="shape s-ring"></div><div class="shape s-sides"></div><div class="shape s-half"></div>
+    </div>
+    <h3 class="sec">Avisos <small>marcador con ::before absoluto</small></h3>
+    <div class="callouts">
+      <div class="callout c-info"><b>Información</b>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</div>
+      <div class="callout c-ok"><b>Éxito</b>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</div>
+      <div class="callout c-warn"><b>Atención</b>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.</div>
+      <div class="callout c-bad"><b>Error</b>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia.</div>
+    </div>
+    <h3 class="sec">Recorte redondeado y código</h3>
+    <div class="clip">
+      <div style="background:#312e81">Lorem</div><div style="background:#4f46e5">Ipsum</div><div style="background:#0891b2">Dolor</div><div style="background:#06b6d4">Sit</div>
+    </div>
+    <div class="codebox" style="margin-top:14px">
+      <div><span class="c">// navegador</span></div>
+      <div><span class="k">const</span> layout = <span class="k">await</span> <span class="f">extractLayout</span>(pages, { width: <span class="s">794</span>, height: <span class="s">1123</span> });</div>
+      <div><span class="k">await</span> <span class="f">fetch</span>(<span class="s">'pdf.php'</span>, { method: <span class="s">'POST'</span>, body: JSON.<span class="f">stringify</span>(layout) });</div>
+    </div>
+    <div class="pfoot"><span><b>Jh2Pdf</b> · ejemplos</span><span>Página 4 de 7</span></div>
+  </div></div>
+  <div class="actions"><button class="btn primary" data-pdf>PDF de esta página</button><button class="btn" data-json>Ver JSON</button><span class="stats"></span></div>
+</article>
+
+<!-- ═════════════════ 5. Imagens ═════════════════ -->
+<article class="card">
+  <h2>5 · Imágenes y filtros</h2>
+  <p>Los filtros CSS se aplican en el servidor con GD. Además: <code>object-fit</code>, recorte con esquinas redondeadas y un <code>drop-shadow</code> que sigue la transparencia del PNG.</p>
+  <div class="chips"><code>filter</code><code>object-fit: cover | contain</code><code>drop-shadow</code><code>data:image/…</code></div>
+  <div class="preview"><div class="page">
+    <div class="eyebrow">Imágenes</div>
+    <h1 class="ptitle">Filtros, recortes y sombras</h1>
+    <p class="lead">La misma imagen (dibujada en un &lt;canvas&gt; y enviada como data:) con cada filtro CSS.</p>
+    <h3 class="sec">filter</h3>
+    <div class="gallery">
+      <figure><img data-gen="scene" alt=""><code>none</code></figure>
+      <figure><img data-gen="scene" alt="" style="filter:grayscale(1)"><code>grayscale(1)</code></figure>
+      <figure><img data-gen="scene" alt="" style="filter:sepia(1)"><code>sepia(1)</code></figure>
+      <figure><img data-gen="scene" alt="" style="filter:blur(3px)"><code>blur(3px)</code></figure>
+      <figure><img data-gen="scene" alt="" style="filter:saturate(2.2)"><code>saturate(2.2)</code></figure>
+      <figure><img data-gen="scene" alt="" style="filter:hue-rotate(140deg)"><code>hue-rotate(140deg)</code></figure>
+      <figure><img data-gen="scene" alt="" style="filter:contrast(1.7)"><code>contrast(1.7)</code></figure>
+      <figure><img data-gen="scene" alt="" style="filter:invert(1)"><code>invert(1)</code></figure>
+      <figure><img data-gen="scene" alt="" style="filter:brightness(1.4) opacity(.6)"><code>brightness(1.4) opacity(.6)</code></figure>
+    </div>
+    <h3 class="sec">Recortes y sombra</h3>
+    <div class="imgrow">
+      <img class="avatar" data-gen="scene" alt="">
+      <img class="badge-img" data-gen="badge" alt="">
+      <img class="contain" data-gen="scene" alt="">
+    </div>
+    <div class="card-img" style="margin-top:18px">
+      <img data-gen="scene" alt="">
+      <div><b style="font:700 15px 'Montserrat'">Lorem ipsum dolor</b>
+        <p style="margin-top:6px;color:#6b7280;font-size:12.5px">Curabitur blandit tempus porttitor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Donec ullamcorper nulla non metus auctor fringilla.</p></div>
+    </div>
+    <div class="pfoot"><span><b>Jh2Pdf</b> · ejemplos</span><span>Página 5 de 7</span></div>
+  </div></div>
+  <div class="actions"><button class="btn primary" data-pdf>PDF de esta página</button><button class="btn" data-json>Ver JSON</button><span class="stats"></span></div>
+</article>
+
+<!-- ═════════════════ 6. Listas e marcas ═════════════════ -->
+<article class="card">
+  <h2>6 · Listas y marcas a mano</h2>
+  <p>Viñetas de lista (disco, círculo, cuadrado, números, letras, <code>::marker</code> de color) y marcas dibujadas a mano sobre el texto (<code>marks: true</code>).</p>
+  <div class="chips"><code>list-style-type</code><code>::marker</code><code>.mk-circle</code><code>--mk-color</code></div>
+  <div class="preview"><div class="page">
+    <div class="eyebrow">Listas</div>
+    <h1 class="ptitle">Listas y resaltados</h1>
+    <p class="lead">Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient.</p>
+    <h3 class="sec">Viñetas</h3>
+    <div class="lists">
+      <div><h4>disc + circle</h4>
+        <ul><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit
+          <ul class="l-circle"><li>Sed do eiusmod tempor</li><li>Incididunt ut labore</li></ul></li><li>Magna aliqua ut enim</li></ul></div>
+      <div><h4>square</h4>
+        <ul class="l-square"><li>Ad minim veniam quis</li><li>Nostrud exercitation ullamco</li><li>Laboris nisi ut aliquip</li><li>Ex ea commodo consequat</li></ul></div>
+      <div><h4>decimal + ::marker</h4>
+        <ol class="l-color"><li>Duis aute irure dolor</li><li>In reprehenderit in voluptate</li><li>Velit esse cillum dolore</li><li>Eu fugiat nulla pariatur</li></ol></div>
+      <div><h4>lower-alpha / upper-alpha</h4>
+        <ol class="l-alpha"><li>Excepteur sint occaecat</li><li>Cupidatat non proident</li></ol>
+        <ol class="l-upper" start="3"><li>Sunt in culpa qui officia</li><li>Deserunt mollit anim</li></ol></div>
+    </div>
+    <h3 class="sec">Paso a paso <small>marcador con ::before y degradado</small></h3>
+    <ol class="steps">
+      <li><b>Lorem ipsum</b> — dolor sit amet, consectetur adipiscing elit.</li>
+      <li><b>Sed do eiusmod</b> — tempor incididunt ut labore et dolore magna.</li>
+      <li><b>Ut enim ad minim</b> — veniam, quis nostrud exercitation ullamco.</li>
+    </ol>
+    <h3 class="sec">Marcas a mano</h3>
+    <div class="marks">
+      <p>Lorem ipsum <span class="mk mk-circle">dolor sit</span> amet, consectetur <span class="mk mk-underline" style="--mk-color:#4f46e5">adipiscing elit</span>,
+        sed do <span class="mk mk-highlight" style="--mk-color:#f5c518">eiusmod tempor</span> incididunt ut labore et
+        <span class="mk mk-box" style="--mk-color:#16a34a">dolore</span> magna aliqua. Ut enim ad minim
+        <span class="mk mk-strike" style="--mk-color:#dc2626">veniam quis</span> nostrud exercitation
+        <span class="mk mk-cross" style="--mk-color:#6b7280">ullamco</span> laboris nisi ut aliquip ex ea
+        <span class="mk mk-underline" style="--mk-color:#f97316">commodo consequat</span>.</p>
+    </div>
+    <div class="pfoot"><span><b>Jh2Pdf</b> · ejemplos</span><span>Página 6 de 7</span></div>
+  </div></div>
+  <div class="actions"><button class="btn primary" data-pdf>PDF de esta página</button><button class="btn" data-json>Ver JSON</button><span class="stats"></span></div>
+</article>
+
+<!-- ═════════════════ 7. Fatura ═════════════════ -->
+<article class="card">
+  <h2>7 · Documento de negocio: factura</h2>
+  <p>Un caso real: encabezado con logo en CSS, bloques de dirección, tabla de conceptos con descripción en dos líneas, totales y sello semitransparente.</p>
+  <div class="chips"><code>flex</code><code>grid</code><code>position: absolute</code><code>opacity</code><code>white-space: nowrap</code></div>
+  <div class="preview"><div class="page">
+    <div class="inv-head">
+      <div class="logo"><i></i> Lorem&nbsp;Ipsum&nbsp;S.L.</div>
+      <div class="inv-meta"><b>FACTURA</b>N.º 2026-00417<br>Emisión: 17/10/2026<br>Vencimiento: 31/10/2026</div>
+    </div>
+    <div class="stamp">PAGADO</div>
+    <div class="parties">
+      <div><h4>Emisor</h4><b>Lorem Ipsum S.L.</b><br>Calle Dolor Sit, 123<br>Madrid<br>NIF B-00000000</div>
+      <div><h4>Cliente</h4><b>Consectetur S.A.</b><br>Av. Adipiscing, 4567<br>Barcelona<br>NIF A-11111111</div>
+      <div><h4>Proyecto</h4><b>Portal Elit</b><br>Contrato 88/2026<br>Período: septiembre<br>Ref.: PO-55120</div>
+    </div>
+    <table class="t4">
+      <thead><tr><th>#</th><th>Descripción</th><th class="num">Cant.</th><th class="num">Unitario</th><th class="num">Total</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Lorem ipsum dolor sit amet<small>Consectetur adipiscing elit, sed do eiusmod tempor</small></td><td class="num">40 h</td><td class="num">$180,00</td><td class="num">$7.200,00</td></tr>
+        <tr><td>2</td><td>Incididunt ut labore<small>Et dolore magna aliqua, ut enim ad minim veniam</small></td><td class="num">1</td><td class="num">$2.400,00</td><td class="num">$2.400,00</td></tr>
+        <tr><td>3</td><td>Quis nostrud exercitation<small>Ullamco laboris nisi ut aliquip ex ea commodo</small></td><td class="num">12</td><td class="num">$95,00</td><td class="num">$1.140,00</td></tr>
+        <tr><td>4</td><td>Duis aute irure dolor<small>In reprehenderit in voluptate velit esse cillum</small></td><td class="num">3</td><td class="num">$650,00</td><td class="num">$1.950,00</td></tr>
+        <tr><td>5</td><td>Excepteur sint occaecat<small>Cupidatat non proident, sunt in culpa qui officia</small></td><td class="num">1</td><td class="num">$480,00</td><td class="num">$480,00</td></tr>
+      </tbody>
+    </table>
+    <div class="totals">
+      <div><span>Subtotal</span><span>$13.170,00</span></div>
+      <div><span>Descuento (5%)</span><span>− $658,50</span></div>
+      <div><span>Impuestos (IVA 2%)</span><span>$250,23</span></div>
+      <div class="grand"><span>Total</span><span>$12.761,73</span></div>
+    </div>
+    <div class="notes">
+      <div><b style="color:#1f2430">Observaciones</b><br>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.</div>
+      <div class="pay"><b>Pago recibido</b><br>Transferencia el 20/10/2026<br>Referencia 9F3A-21C7-77B0</div>
+    </div>
+    <div class="pfoot"><span><b>Jh2Pdf</b> · ejemplos</span><span>Página 7 de 7</span></div>
+  </div></div>
+  <div class="actions"><button class="btn primary" data-pdf>PDF de esta página</button><button class="btn" data-json>Ver JSON</button><span class="stats"></span></div>
+</article>
+
+</main>
+
+<div class="viewer" id="viewer">
+  <header><b id="vtitle">PDF</b><span class="stats" id="vstats" style="color:#c7d2fe"></span>
+    <a class="btn" id="vdown" download="jh2pdf-ejemplo.pdf">Descargar</a><button class="btn" id="vclose">Cerrar</button></header>
+  <iframe id="vframe" title="PDF generado"></iframe>
+</div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { extractLayout } from '../js/jh2pdf.js';
+
+const PAGE = { width: 794, height: 1123 };            // A4 retrato em px CSS (595 × 842 pt no PDF)
+const $ = (s, r = document) => r.querySelector(s);
+
+/* ── imagens de exemplo, desenhadas num canvas e usadas como data: (o resolvedor padrão do PHP só aceita data:) ── */
+async function scene() {
+  const c = document.createElement('canvas'); c.width = 640; c.height = 420;
+  const g = c.getContext('2d');
+  const sky = g.createLinearGradient(0, 0, 0, 300);
+  sky.addColorStop(0, '#2b1055'); sky.addColorStop(.5, '#d53369'); sky.addColorStop(1, '#ffb36b');
+  g.fillStyle = sky; g.fillRect(0, 0, 640, 420);
+  g.fillStyle = '#ffe29a'; g.beginPath(); g.arc(430, 230, 70, 0, Math.PI * 2); g.fill();
+  const ridge = (y, amp, col, seed) => {
+    g.fillStyle = col; g.beginPath(); g.moveTo(0, 420);
+    for (let x = 0; x <= 640; x += 8) g.lineTo(x, y + Math.sin(x / 70 + seed) * amp + Math.sin(x / 23 + seed * 2) * amp * .3);
+    g.lineTo(640, 420); g.fill();
+  };
+  ridge(250, 30, '#7b2e5f', 1); ridge(290, 26, '#4a1d4f', 3); ridge(330, 18, '#25123a', 5);
+  g.fillStyle = 'rgba(255,226,154,.35)';
+  for (let i = 0; i < 6; i++) g.fillRect(390 - i * 6, 352 + i * 10, 80 + i * 12, 3);
+  return c.toDataURL('image/jpeg', .86);
+}
+async function badge() {
+  await document.fonts.load("700 40px 'Montserrat'");
+  const c = document.createElement('canvas'); c.width = c.height = 240;
+  const g = c.getContext('2d');
+  const grad = g.createLinearGradient(0, 0, 0, 240);
+  grad.addColorStop(0, '#22d3ee'); grad.addColorStop(1, '#4f46e5');
+  g.fillStyle = grad; g.beginPath();
+  for (let i = 0; i < 24; i++) { const a = i * Math.PI / 12, r = i % 2 ? 100 : 118; g.lineTo(120 + Math.cos(a) * r, 120 + Math.sin(a) * r); }
+  g.closePath(); g.fill();
+  g.fillStyle = '#fff'; g.font = "700 46px 'Montserrat'"; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('PDF', 120, 124);
+  return c.toDataURL('image/png');
+}
+const images = { scene: await scene(), badge: await badge() };
+document.querySelectorAll('img[data-gen]').forEach((im) => { im.src = images[im.dataset.gen]; });
+
+/* ── extração → POST → PDF ── */
+const kb = (n) => (n / 1024).toFixed(n < 10240 ? 1 : 0) + ' KB';
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.style.display = 'block'; clearTimeout(toast.h); toast.h = setTimeout(() => (t.style.display = 'none'), 4000); }
+
+async function layoutOf(pages) {
+  return extractLayout(pages, { ...PAGE, wrap: (el) => el.outerHTML, marks: true });
+}
+
+async function makePdf(pages, title, statsEl, button, readyUrl) {
+  button.disabled = true;
+  const label = button.textContent; button.textContent = 'Generando…';
+  try {
+    const t0 = performance.now();
+    const layout = await layoutOf(pages);
+    const t1 = performance.now();
+    const body = JSON.stringify(layout);
+    let res = null;
+    try { res = await fetch('pdf.php?title=' + encodeURIComponent(title), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body }); } catch { /* sem servidor */ }
+    const isPdf = res && res.ok && (res.headers.get('Content-Type') || '').includes('pdf');
+    if (!isPdf) {
+      // site estático (GitHub Pages) ou PHP indisponível: abre o PDF gerado antes por esta mesma página
+      if (res && res.status === 500) throw new Error(await res.text());
+      const ready = await fetch(readyUrl);
+      if (!ready.ok) throw new Error('este servidor no tiene PHP y no se encontró el PDF listo');
+      const msg = 'PDF listo (generado antes con Jh2Pdf): generar en vivo requiere PHP en el servidor';
+      if (statsEl) statsEl.textContent = msg;
+      openViewer(await ready.blob(), title, msg);
+      return;
+    }
+    const blob = await res.blob();
+    const ops = layout.pages.reduce((n, p) => n + p.ops.length, 0);
+    const stats = `${layout.pages.length} pág · ${ops} ops · JSON ${kb(body.length)} · navegador ${Math.round(t1 - t0)} ms · PHP ${res.headers.get('X-Jh2Pdf-Ms') ?? '?'} ms · PDF ${kb(blob.size)}`;
+    if (statsEl) statsEl.textContent = stats;
+    openViewer(blob, title, stats);
+  } catch (e) {
+    toast('Error: ' + e.message);
+  } finally {
+    button.disabled = false; button.textContent = label;
+  }
+}
+
+function openViewer(blob, title, stats) {
+  const url = URL.createObjectURL(blob);
+  $('#vtitle').textContent = title; $('#vstats').textContent = stats;
+  $('#vframe').src = url; $('#vdown').href = url;
+  $('#viewer').classList.add('open');
+}
+$('#vclose').onclick = () => { $('#viewer').classList.remove('open'); $('#vframe').src = 'about:blank'; };
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $('#vclose').click(); });
+
+document.querySelectorAll('.card').forEach((card, i) => {
+  const page = $('.preview > .page', card);
+  const title = $('h2', card).textContent.replace(/^\d+\s·\s/, '');
+  const ready = `pdf/es/page-${i + 1}.pdf`;
+  $('[data-json]', card).insertAdjacentHTML('afterend', `<a class="btn" href="${ready}" target="_blank" rel="noopener">PDF listo</a>`);
+  $('[data-pdf]', card).onclick = (e) => makePdf([page], 'Jh2Pdf — ' + title, $('.stats', card), e.currentTarget, ready);
+  $('[data-json]', card).onclick = async () => {
+    const layout = await layoutOf([page]);
+    window.open(URL.createObjectURL(new Blob([JSON.stringify(layout, null, 1)], { type: 'application/json' })));
+  };
+});
+$('#all').onclick = (e) => makePdf([...document.querySelectorAll('.preview > .page')], 'Jh2Pdf — galería de ejemplos', null, e.currentTarget, 'pdf/es/all.pdf');
+</script>
+</body>
+</html>

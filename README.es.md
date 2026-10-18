@@ -4,7 +4,7 @@
 
 **HTML a PDF idéntico al navegador, sin navegador en el servidor.** Sin Chrome headless, sin Puppeteer, sin wkhtmltopdf. Funciona en hosting compartido (solo PHP + GD).
 
-📖 **[Documentación completa](docs/es.html)** · 🎨 **[Galería de ejemplos](demo/index.html)** (tablas, degradados, sombras, imágenes con filtros, listas, una factura) · 📄 [Licencia MIT](LICENSE)
+📖 **[Documentación completa](docs/es.html)** · 🎨 **[Galería de ejemplos](demo/es.html)** (tablas, degradados, sombras, imágenes con filtros, listas, una factura) · 📄 [Licencia MIT](LICENSE)
 
 ## Por qué existe
 
@@ -209,7 +209,7 @@ contra **el navegador de quien exporta** (XSS clásico: `<img onerror=…>`). De
 
 ## Lo que (todavía) no se dibuja
 
-Funciona bien para documentos, informes, tablas y diapositivas (ver la [galería](demo/index.html)). Hoy **no** salen iguales en el PDF:
+Funciona bien para documentos, informes, tablas y diapositivas (ver la [galería](demo/es.html)). Hoy **no** salen iguales en el PDF:
 
 - `box-shadow` con desenfoque (sin desenfoque, interior o exterior, sí se dibuja), `text-shadow`, `background-image: url()`, `transform`, `clip-path`, SVG/`<canvas>` en línea;
 - `linear-gradient` sale vertical u horizontal (los diagonales se ajustan a la dirección más cercana); `radial-gradient` y los degradados repetidos o en capas, no;

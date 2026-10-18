@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,18 +19,22 @@
   a.card span { color: #5d6378; font-size: 14.5px; }
   footer { margin-top: 26px; font-size: 13.5px; color: #8b90a3; }
   footer a { color: inherit; }
+  .langs { display: flex; gap: 2px; font-size: 13px; margin-bottom: 18px; }
+  .langs a, .langs b { padding: 3px 9px; border-radius: 99px; text-decoration: none; color: #5d6378; border: 1px solid #e2e4ec; }
+  .langs b { background: #161827; border-color: #161827; color: #fff; }
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div class="langs"><b>English</b><a href="index.pt-BR.html" hreflang="pt-BR">Português</a><a href="index.es.html" hreflang="es">Español</a></div>
   <div class="brand"><i></i> Jh2Pdf</div>
-  <p class="lead">HTML para PDF fiel ao navegador, sem navegador no servidor. O navegador mede o layout; o PHP só desenha o PDF.</p>
+  <p class="lead">Pixel-perfect HTML to PDF, without a browser on the server. The browser measures the layout; PHP only draws the PDF. No headless Chrome, runs on shared hosting.</p>
   <div class="cards">
-    <a class="card" href="demo/"><b>Galeria de exemplos →</b><span>Tabelas, degradês, sombras, imagens com filtros, listas, marcas à mão e uma fatura, com o PDF gerado ao vivo.</span></a>
-    <a class="card" href="docs/"><b>Documentação →</b><span>Instalação, API JS e PHP, CSS suportado, fontes, segurança, desempenho e dependências.</span></a>
-    <a class="card" href="examples/minimal/"><b>Exemplo mínimo →</b><span>O menor código possível: uma página HTML e um endpoint PHP.</span></a>
+    <a class="card" href="demo/"><b>Examples gallery →</b><span>Tables, gradients, shadows, filtered images, lists, hand-drawn marks and an invoice, with the generated PDF.</span></a>
+    <a class="card" href="docs/"><b>Documentation →</b><span>Installation, JS and PHP API, supported CSS, fonts, security, performance and dependencies.</span></a>
+    <a class="card" href="examples/minimal/"><b>Minimal example →</b><span>The smallest possible code: one HTML page and one PHP endpoint.</span></a>
   </div>
-  <footer>Licença <a href="LICENSE">MIT</a> · © 2026 Geison Quevedo</footer>
+  <footer><a href="LICENSE">MIT</a> license · © 2026 Geison Quevedo</footer>
 </div>
 </body>
 </html>
