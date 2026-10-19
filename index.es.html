@@ -3,7 +3,31 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jh2Pdf</title>
+<title>Jh2Pdf — HTML a PDF en PHP sin Chrome en el servidor</title>
+<meta name="description" content="HTML a PDF en PHP idéntico al navegador, sin Chrome headless, Puppeteer ni wkhtmltopdf. Flexbox, grid y CSS moderno. Funciona en hosting compartido.">
+<link rel="canonical" href="https://geisonq.github.io/jh2pdf/index.es.html">
+<link rel="alternate" hreflang="en" href="https://geisonq.github.io/jh2pdf/">
+<link rel="alternate" hreflang="pt-BR" href="https://geisonq.github.io/jh2pdf/index.pt-BR.html">
+<link rel="alternate" hreflang="es" href="https://geisonq.github.io/jh2pdf/index.es.html">
+<link rel="alternate" hreflang="x-default" href="https://geisonq.github.io/jh2pdf/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Jh2Pdf">
+<meta property="og:title" content="Jh2Pdf — HTML a PDF en PHP sin Chrome en el servidor">
+<meta property="og:description" content="HTML a PDF en PHP idéntico al navegador, sin Chrome headless, Puppeteer ni wkhtmltopdf. Flexbox, grid y CSS moderno. Funciona en hosting compartido.">
+<meta property="og:url" content="https://geisonq.github.io/jh2pdf/index.es.html">
+<meta property="og:image" content="https://geisonq.github.io/jh2pdf/assets/social.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Jh2Pdf — HTML to PDF in PHP without a browser on the server">
+<meta property="og:locale" content="es_ES">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Jh2Pdf — HTML a PDF en PHP sin Chrome en el servidor">
+<meta name="twitter:description" content="HTML a PDF en PHP idéntico al navegador, sin Chrome headless, Puppeteer ni wkhtmltopdf. Flexbox, grid y CSS moderno. Funciona en hosting compartido.">
+<meta name="twitter:image" content="https://geisonq.github.io/jh2pdf/assets/social.png">
+<meta name="theme-color" content="#4f46e5">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Jh2Pdf", "alternateName": "Jh2pdf — JavaScript HTML 2 PDF", "description": "HTML a PDF en PHP idéntico al navegador, sin Chrome headless, Puppeteer ni wkhtmltopdf. Flexbox, grid y CSS moderno. Funciona en hosting compartido.", "url": "https://geisonq.github.io/jh2pdf/index.es.html", "codeRepository": "https://github.com/geisonq/jh2pdf", "programmingLanguage": ["PHP", "JavaScript"], "runtimePlatform": "PHP 8.1+", "license": "https://opensource.org/licenses/MIT", "image": "https://geisonq.github.io/jh2pdf/assets/social.png", "inLanguage": "es", "author": {"@type": "Person", "name": "Geison Quevedo", "url": "https://github.com/geisonq"}, "keywords": "html to pdf, php pdf, html2pdf, puppeteer alternative, wkhtmltopdf alternative, dompdf, shared hosting"}</script>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="stylesheet" href="demo/fonts.css">
 <style>
@@ -23,6 +47,12 @@
   .langs { display: flex; gap: 2px; font-size: 13px; margin-bottom: 18px; }
   .langs a, .langs b { padding: 3px 9px; border-radius: 99px; text-decoration: none; color: #5d6378; border: 1px solid #e2e4ec; }
   .langs b { background: #161827; border-color: #161827; color: #fff; }
+  .more { margin-top: 30px; background: #fff; border: 1px solid #e2e4ec; border-radius: 16px; padding: 6px 24px 18px; }
+  .more h2 { font: 700 19px 'Montserrat'; margin: 18px 0 8px; }
+  .more ul { padding-left: 20px; margin: 0; } .more li { margin: 6px 0; color: #3b4055; }
+  .more pre { background: #0f172a; color: #e2e8f0; border-radius: 10px; padding: 12px 16px; overflow-x: auto; margin: 6px 0 8px; }
+  .more code { font: 14px 'JetBrains Mono', monospace; } .more p code { background: #eef0ff; color: #3730a3; padding: 1px 5px; border-radius: 5px; }
+  .more a { color: #4f46e5; }
 </style>
 </head>
 <body>
@@ -35,6 +65,18 @@
     <a class="card" href="docs/es.html"><b>Documentación →</b><span>Instalación, API JS y PHP, CSS soportado, fuentes, seguridad, rendimiento y dependencias.</span></a>
     <a class="card" href="examples/minimal/"><b>Ejemplo mínimo →</b><span>El código más pequeño posible: una página HTML y un endpoint PHP.</span></a>
   </div>
+  <section class="more">
+    <h2>¿Por qué Jh2Pdf?</h2>
+    <ul>
+      <li><b>Sin navegador en el servidor.</b> Una alternativa ligera a Chrome headless, Puppeteer y wkhtmltopdf: sin VPS, contenedores ni binarios.</li>
+      <li><b>Igual que la pantalla.</b> A diferencia de Dompdf, mPDF o TCPDF leyendo el HTML, soporta flexbox, grid, variables CSS, degradados y filtros de imagen, porque el diseño lo calcula el navegador.</li>
+      <li><b>PDF de verdad.</b> Texto seleccionable y buscable, fuentes incrustadas y 12 familias de fuentes libres incluidas.</li>
+      <li><b>Seguro por diseño.</b> El servidor nunca interpreta HTML, CSS ni JavaScript: solo dibuja números, colores y texto validados.</li>
+    </ul>
+    <h2>Instalación</h2>
+    <pre><code>composer require geisonq/jh2pdf</code></pre>
+    <p>Después, copia <code>js/jh2pdf.js</code> a tu sitio. Código fuente en <a href="https://github.com/geisonq/jh2pdf">GitHub</a> · paquete en <a href="https://packagist.org/packages/geisonq/jh2pdf">Packagist</a>.</p>
+  </section>
   <footer>Licencia <a href="LICENSE">MIT</a> · © 2026 Geison Quevedo</footer>
 </div>
 </body>

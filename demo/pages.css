@@ -32,7 +32,7 @@
   background: linear-gradient(to right, #312e81, #4f46e5 55%, #06b6d4);
 }
 .page .hero .eyebrow { color: #c7d2fe; }
-.page .hero h1 { font: 700 40px/1.08 'Jh Display'; margin: 12px 0 10px; }
+.page .hero h1, .page .hero h2 { font: 700 40px/1.08 'Jh Display'; margin: 12px 0 10px; }
 .page .hero p { font-size: 15.5px; color: #e0e7ff; max-width: 560px; }
 .page .hero .by { margin-top: 22px; display: flex; gap: 10px; align-items: center; font-size: 12px; color: #c7d2fe; }
 .page .hero .by span { background: rgba(255, 255, 255, .16); border-radius: 999px; padding: 3px 12px; color: #fff; }
