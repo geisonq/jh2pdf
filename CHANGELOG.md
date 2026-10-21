@@ -26,6 +26,14 @@ Fonts: a PDF that matches the screen with **any** font, and no more silent fallb
 - Fully backwards compatible: without the new options the behavior is the same as 1.0.0, except for the font choice improvements above.
 - A 1.1 extractor talking to a 1.0 server: the new `fb` field is ignored, and weights outside 400–700 are clamped as in 1.0.
 
+## 1.0.1
+
+Website and packaging only; the library code is unchanged.
+
+- Published as `geisonq/jh2pdf` on Packagist, with the website at https://geisonq.github.io/jh2pdf/.
+- SEO: titles, descriptions, canonical URLs, hreflang, Open Graph/Twitter cards, structured data and a sitemap.
+- Website, gallery and documentation in English, Portuguese and Spanish, with the logo.
+
 ## 1.0.0
 
 First public release.
