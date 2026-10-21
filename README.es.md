@@ -115,13 +115,14 @@ Devuelve `{ w, h, pages: [{ bg, ops }] }`. Espera las fuentes (`document.fonts.r
 
 | Clase | Función |
 | --- | --- |
-| `Jh2Pdf\Options` | configuración: `tempDir` (**obligatorio**, con escritura), `fontDir`, `imageResolver`, `marksCss`, `creator`, `fallbackFont`, límites (`maxPages`, `maxOpsPerPage`, `maxOpsTotal`, `maxImages`), `memoryLimit`, `pxToPt` |
-| `Jh2Pdf\Renderer` | `render(array $layout, string $title = ''): string` devuelve los bytes del PDF; lanza `Jh2Pdf\Exception` |
+| `Jh2Pdf\Options` | configuración: `tempDir` (**obligatorio**, con escritura), `fontDir`, `addFont()`, `addFontDir()`, `imageResolver`, `marksCss`, `creator`, `fallbackFont`, `strictFonts`, `onMissingFont`, límites (`maxPages`, `maxOpsPerPage`, `maxOpsTotal`, `maxImages`), `memoryLimit`, `pxToPt` |
+| `Jh2Pdf\Renderer` | `render(array $layout, string $title = ''): string` devuelve los bytes del PDF; lanza `Jh2Pdf\Exception`; `missingFonts()` lista las fuentes del último PDF que el servidor no tenía |
 | `Jh2Pdf\ImageResolver` | interfaz `load(string $src): ?string`: **tú decides** de dónde vienen las imágenes |
 | `Jh2Pdf\DataUriImageResolver` | resolvedor por defecto: solo `data:image/...;base64,...` |
 | `Jh2Pdf\Layout` | `clean()` valida el JSON; `num()`/`color()` son conversores seguros |
 | `Jh2Pdf\ImageFilter` | filtros de imagen de CSS con GD (se puede usar por separado) |
-| `Jh2Pdf\Fonts`, `Images`, `Marks`, `Svg` | internos: fuentes por peso, imágenes/sombras, marcas, trazados SVG |
+| `Jh2Pdf\FontFaces` | `css($options, $url)` genera el CSS `@font-face` del navegador a partir de las mismas fuentes que usa el PDF |
+| `Jh2Pdf\FontIndex`, `Fonts`, `Images`, `Marks`, `Svg` | internos: la lista de fuentes, la elección de fuente (reglas de CSS), imágenes/sombras, marcas, trazados SVG |
 
 ### Imágenes
 
@@ -145,17 +146,51 @@ En el navegador, `acceptImage` evita enviar lo que el servidor rechazaría.
 
 ## Fuentes
 
-Dompdf no lee woff2 ni fuentes variables, y el navegador usa las variables. Por eso `fonts/` contiene **TTF estáticos**, uno por peso:
+Para que el PDF salga igual que la pantalla, **el navegador y el servidor deben usar los mismos archivos de fuente**. Dompdf no lee woff2 ni fuentes variables, así que el servidor usa **TTF estáticos**, uno por peso. Hay tres formas de dárselas:
 
-```
-fonts/dm-sans-400.ttf  dm-sans-500.ttf  dm-sans-600.ttf  dm-sans-700.ttf  dm-sans-400-italic.ttf …
-        └ familia (minúsculas, guiones) └ peso 400/500/600/700           └ cursiva, si la familia la tiene
+- la carpeta `fonts/` (`Options::$fontDir`), con archivos llamados `<familia>-<peso>[-italic].ttf`: `dm-sans-600.ttf`, `dm-sans-400-italic.ttf` (familia en minúsculas con guiones, peso de 100 a 900);
+- `$options->addFontDir($dir)`: otra carpeta, con la misma convención de nombres (úsala para tus fuentes);
+- `$options->addFont($family, $weight, $file, $italic)`: un archivo con cualquier nombre; tiene prioridad sobre las carpetas.
+
+```php
+$options = new Jh2Pdf\Options('/ruta/con/escritura');
+$options->addFont('Roboto', 400, '/fonts/Roboto-Regular.ttf')
+        ->addFont('Roboto', 400, '/fonts/Roboto-Italic.ttf', italic: true)
+        ->addFont('Roboto', 700, '/fonts/Roboto-Bold.ttf')
+        ->addFontDir('/mas/fuentes');
 ```
 
-- El navegador informa la **familia y el peso exactos** de cada palabra; PHP usa el archivo de ese peso. Si no existe, usa la fuente de reserva (DejaVu).
-- Familias sin cursiva (p. ej., JetBrains Mono): el PDF inclina la normal 12°, como hace el navegador.
-- **Agregar una fuente:** `pip install fonttools brotli` y `python tools/generate-fonts.py --fonts fonts.json --src carpeta-de-fuentes --out fonts`
-  (ver la cabecera del script para el formato de `fonts.json`). El servidor no necesita Python.
+**Cómo se elige la fuente** (las mismas reglas que CSS):
+
+- **Familia:** la primera familia de la lista `font-family` que el servidor tiene (`'Roboto', Arial, sans-serif` usa Roboto, o Arial si la tienes; los nombres genéricos como `sans-serif` no son fuentes). El navegador envía hasta 5 de reserva después de la primera.
+- **Estilo:** cursiva si la familia tiene archivo en cursiva; si no, el estilo normal inclinado 12°, como hace el navegador.
+- **Peso:** de 100 a 900, el archivo más cercano que tengas: pedir 800 con solo 400 y 700 usa el 700; 300 usa el 400.
+
+**Haz que el navegador use los mismos archivos.** Genera el CSS `@font-face` a partir de las mismas fuentes, para no tener nunca dos listas que mantener iguales:
+
+```php
+// una vez, al publicar (leer los nombres dentro de los TTF es demasiado lento para hacerlo en cada petición)
+file_put_contents('public/fonts.css', Jh2Pdf\FontFaces::css($options, '/fonts/'));
+```
+
+o desde la línea de comandos: `php tools/fonts-css.php --dir fonts --url /fonts/ --out public/fonts.css` (instalado con Composer, el script está en `vendor/geisonq/jh2pdf/tools/fonts-css.php`).
+
+**Nunca falles en silencio.** Una familia que el servidor no tiene se dibuja con `fallbackFont` (DejaVu Sans), y el PDF queda distinto de la pantalla. Para detectarlo:
+
+```php
+$options->strictFonts = true;   // lanza Jh2Pdf\Exception: "Missing fonts: Roboto 400, Roboto 700 italic."
+$options->onMissingFont = fn(string $family, int $weight, bool $italic) => error_log("Fuente faltante: $family $weight");
+
+$pdf = $renderer->render($layout);
+$renderer->missingFonts();      // [['family' => 'Roboto', 'weight' => 400, 'italic' => false], …]
+```
+
+La comprobación se hace **antes** de dibujar nada. Usa `strictFonts` en desarrollo y en las pruebas; en producción, registra con `onMissingFont` o `missingFonts()`.
+
+**Agregar una fuente a partir de una fuente variable** (p. ej., Google Fonts): `pip install fonttools brotli` y `python tools/generate-fonts.py --fonts fonts.json --src carpeta-de-fuentes --out fonts`
+(`--weights 300,400,700` elige los pesos; ver la cabecera del script para el formato de `fonts.json`). Escribe la familia, el estilo y el peso correctos dentro de cada TTF.
+Para corregir los nombres de TTF estáticos que ya tienes: `python tools/generate-fonts.py --fix-names carpeta`. El servidor no necesita Python.
+Comprueba que la licencia de la fuente permita incrustarla en PDF.
 
 Incluidas (SIL Open Font License 1.1): Barlow Condensed, DM Sans, Fira Code, Inter, JetBrains Mono, Montserrat, Nunito, Open Sans y cuatro serif renombradas:
 **Jh Serif** (de Lora), **Jh Serif Text** (de Merriweather), **Jh Display** (de Playfair Display) y **Jh Serif Book** (de Source Serif 4).
@@ -219,7 +254,7 @@ Funciona bien para documentos, informes, tablas y diapositivas (ver la [galería
 - los bordes `dashed`/`dotted`/`double` salen sólidos; el subrayado y el tachado se dibujan palabra por palabra (no pasan bajo los espacios);
 - ligaduras tipográficas (p. ej., `=>` en JetBrains Mono se convierte en dos caracteres);
 - pseudoelementos con texto o contadores, `::first-letter`, `<video>`, `<iframe>`. Los pseudoelementos que son solo una **caja vacía** (`content: ''` con fondo, borde, esquinas redondeadas o `box-shadow` sin desenfoque) **sí se dibujan** cuando son `position: absolute` o `display: block`;
-- pesos fuera de 400–700 (se redondean al más cercano);
+- pesos fraccionarios de fuentes variables (450 pasa a 500) y fuentes sin TTF estático en el servidor (caen en DejaVu; ver [Fuentes](#fuentes));
 - paginación automática: cada elemento de `pages` es una página; lo que exceda la altura se corta.
 
 Son buenas contribuciones: cada una se convierte en una operación nueva en el JSON (ver [Cómo contribuir](#cómo-contribuir)). La tabla completa está en [docs › CSS soportado](https://geisonq.github.io/jh2pdf/docs/es.html#css).
@@ -241,6 +276,7 @@ jh2pdf/
 ├── docs/format.md        formato de las operaciones (el "contrato" entre JS y PHP)
 ├── demo/                 galería de ejemplos (abre demo/index.html a través de un servidor PHP)
 ├── examples/minimal/     ejemplo mínimo (HTML + endpoint PHP)
+├── tools/fonts-css.php   genera el CSS @font-face del navegador a partir de las mismas fuentes
 ├── tools/generate-fonts.py   genera los TTF a partir de fuentes variables
 └── tests/run.php         pruebas (php tests/run.php o composer test)
 ```

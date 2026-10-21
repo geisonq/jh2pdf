@@ -12,6 +12,8 @@ foreach ([dirname(__DIR__) . '/vendor/autoload.php', dirname(__DIR__, 3) . '/ven
 
 use Jh2Pdf\DataUriImageResolver;
 use Jh2Pdf\Exception;
+use Jh2Pdf\FontFaces;
+use Jh2Pdf\FontIndex;
 use Jh2Pdf\Fonts;
 use Jh2Pdf\ImageFilter;
 use Jh2Pdf\Images;
@@ -184,6 +186,115 @@ $t0 = microtime(true);
 $pdf = (new Renderer($opts))->render($weird);
 check('números extremos, NaN/INF e tipos errados não quebram nem demoram', substr($pdf, 0, 4) === '%PDF' && microtime(true) - $t0 < 10);
 check('nenhum arquivo temporário sobra depois dos ataques', !glob($tmp . '/lay_*'));
+
+echo "Fontes: registro, peso, pilha e CSS\n";
+$fontDir = dirname(__DIR__) . '/fonts';
+$nw = fn(int $want, array $have) => Fonts::nearestWeight($want, $have);
+check('Fonts::nearestWeight segue a regra do CSS', $nw(400, [400, 700]) === 400 && $nw(300, [400, 700]) === 400 && $nw(500, [400, 700]) === 400
+    && $nw(600, [400, 700]) === 700 && $nw(800, [400, 700]) === 700 && $nw(900, [400, 700]) === 700 && $nw(100, [400, 700]) === 400
+    && $nw(450, [400, 500]) === 500 && $nw(400, [300, 500]) === 500 && $nw(300, [200, 400]) === 200 && $nw(900, [100]) === 100 && $nw(400, []) === null,
+    json_encode([$nw(500, [400, 700]), $nw(450, [400, 500]), $nw(300, [200, 400])]));
+$idx = new FontIndex($opts);
+check('FontIndex acha as famílias da pasta, com pesos e itálicos', count($idx->families()) === 12 && $idx->has('inter') && $idx->has('dm-sans')
+    && array_keys($idx->faces('inter')) === [400, 500, 600, 700] && isset($idx->faces('dm-sans')[600][1]) && !isset($idx->faces('inter')[400][1]) && !$idx->has('roboto') && !$idx->has(''),
+    implode(',', $idx->families()));
+check('FontIndex::slug', FontIndex::slug('DM Sans') === 'dm-sans' && FontIndex::slug('../../x') === 'x' && FontIndex::slug("  A 'b'-1 ") === 'a-b-1');
+
+// registro explícito: arquivo com qualquer nome, valores inválidos, prioridade e pastas extras
+$brand = $tmp . '/Brand_Face.ttf';
+copy($fontDir . '/montserrat-700.ttf', $brand);
+$extra = $tmp . '/extra';
+mkdir($extra);
+copy($fontDir . '/nunito-400.ttf', $extra . '/acme-sans-400.ttf');
+copy($fontDir . '/nunito-700.ttf', $extra . '/acme-sans-700.ttf');
+copy($fontDir . '/nunito-400.ttf', $extra . '/not a font name.ttf');
+$o = new Options($tmp);
+$o->addFont('Acme Sans', 700, $brand)->addFontDir($extra)->addFont('Inter', 400, $fontDir . '/jetbrains-mono-400.ttf');
+$ix = new FontIndex($o);
+$fw = fn(string $p) => str_replace('\\', '/', $p);          // no Windows os caminhos misturam \ e /
+check('addFont e addFontDir: família nova, pasta extra e prioridade de addFont', $ix->faces('acme-sans')[700][0] === $fw($brand) && $ix->faces('acme-sans')[400][0] === $fw($extra) . '/acme-sans-400.ttf'
+    && $ix->faces('inter')[400][0] === $fw($fontDir) . '/jetbrains-mono-400.ttf' && $ix->faces('inter')[700][0] === $fw($fontDir) . '/inter-700.ttf'
+    && $ix->name('acme-sans') === 'Acme Sans' && !$ix->has('not-a-font-name'), json_encode([$ix->faces('acme-sans'), $ix->faces('inter')[400] ?? null]));
+$thrown = function (callable $f): bool {
+    try { $f(); return false; } catch (Exception $e) { return !str_contains($e->getMessage(), '/') && !str_contains($e->getMessage(), '\\'); }
+};
+check('addFont/addFontDir recusam entradas inválidas (sem vazar caminhos)', $thrown(fn() => (new Options($tmp))->addFont('X', 400, $tmp . '/nao-existe.ttf'))
+    && $thrown(fn() => (new Options($tmp))->addFont('X', 450, $brand)) && $thrown(fn() => (new Options($tmp))->addFont('X', 0, $brand))
+    && $thrown(fn() => (new Options($tmp))->addFont('!!!', 400, $brand)) && $thrown(fn() => (new Options($tmp))->addFont('X', 400, $extra . '/not a font name.png'))
+    && $thrown(fn() => (new Options($tmp))->addFontDir($tmp . '/nao-existe')));
+
+$T = fn(array $x) => $x + ['t' => 'T', 'x' => 10, 'y' => 10, 'w' => 100, 'h' => 20, 's' => 'Hello', 'z' => 16, 'c' => '#000000'];
+$render = function (array $ops, ?Options $opt = null) use ($opts, &$renderer) {
+    $renderer = new Renderer($opt ?? $opts);
+    return $renderer->render(['w' => 400, 'h' => 300, 'pages' => [['bg' => '#ffffff', 'ops' => $ops]]]);
+};
+$names = function (string $pdf): array {
+    preg_match_all('~/BaseFont\s*/(?:[A-Z]{6}\+)?([A-Za-z0-9\-]+)~', $pdf, $m);
+    return array_values(array_unique($m[1]));
+};
+
+$pdf = $render([$T(['f' => 'Acme Sans', 'g' => 700])], $o);
+check('addFont: o PDF usa o arquivo registrado (nome de arquivo livre) e nada falta', $names($pdf) === ['Montserrat-Bold'] && $renderer->missingFonts() === [], json_encode($names($pdf)));
+$pdf = $render([$T(['f' => 'Acme Sans', 'g' => 400])], $o);
+check('addFontDir: o PDF usa a fonte da pasta extra', $names($pdf) === ['Nunito-Regular'], json_encode($names($pdf)));
+
+// peso mais próximo e itálico
+$w = fn(array $x) => $names($render([$T($x + ['f' => 'Inter'])]));
+check('peso mais próximo: 300→Regular, 500→Medium, 600→SemiBold, 800/900→Bold', $w(['g' => 300]) === ['Inter-Regular'] && $w(['g' => 500]) === ['Inter-Medium']
+    && $w(['g' => 600]) === ['Inter-SemiBold'] && $w(['g' => 800]) === ['Inter-Bold'] && $w(['g' => 900]) === ['Inter-Bold'], json_encode([$w(['g' => 300]), $w(['g' => 500]), $w(['g' => 800])]));
+check('peso inválido no JSON vira 400; enorme vira o mais pesado', $w(['g' => 'x']) === ['Inter-Regular'] && $w(['g' => -5]) === ['Inter-Regular'] && $w(['g' => 1e9]) === ['Inter-Bold'] && $w(['g' => [700]]) === ['Inter-Regular']);
+check('itálico real quando a família tem; simulado (sem erro) quando não tem', $names($render([$T(['f' => 'Jh Serif', 'g' => 700, 'i' => 1])])) === ['JhSerif-BoldItalic']
+    && $names($render([$T(['f' => 'Inter', 'g' => 700, 'i' => 1])])) === ['Inter-Bold']);
+
+// pilha de famílias (font-family com reservas) e limites
+$pdf = $render([$T(['f' => 'Nope Sans', 'fb' => 'Also Nope,Inter'])]);
+check('pilha: usa a primeira família da lista que o servidor tem, sem reportar falta', $names($pdf) === ['Inter-Regular'] && $renderer->missingFonts() === [], json_encode($names($pdf)));
+$render([$T(['f' => 'Nope Sans', 'fb' => 'a1,a2,a3,a4,a5,a6,Inter'])]);
+check('pilha: só as 5 primeiras reservas contam (resto é ignorado)', $renderer->missingFonts() === [['family' => 'Nope Sans', 'weight' => 400, 'italic' => false]]);
+$pdf = $render([$T(['f' => 'Inter)] TJ (pwn', 'fb' => "../../etc/passwd, \x00Inter, Inter"])]);
+check('pilha hostil (caminhos, bytes nulos, injeção) é limpa e não quebra', substr($pdf, 0, 4) === '%PDF' && $names($pdf) === ['Inter-Regular'] && !str_contains($pdf, 'passwd'), json_encode($names($pdf)));
+$pdf = $render([$T(['f' => ['x'], 'fb' => ['y']]), $T(['f' => 7, 'fb' => 7]), $T([])]);
+check('f/fb de tipos errados ou ausentes: usa a fonte de reserva, sem aviso de falta', substr($pdf, 0, 4) === '%PDF' && $renderer->missingFonts() === []);
+
+// fonte faltando: relatório, callback, modo estrito
+$seen = [];
+$lenient = new Options($tmp);
+$lenient->onMissingFont = function (string $family, int $weight, bool $italic) use (&$seen) { $seen[] = "$family/$weight/" . (int)$italic; };
+$pdf = $render([$T(['f' => 'Roboto']), $T(['f' => 'Roboto', 's' => 'again']), $T(['f' => 'Lato', 'g' => 700, 'i' => 1]), $T(['f' => 'Inter']), $T(['s' => 'sem família'])], $lenient);
+check('fonte faltando: PDF sai com a fonte de reserva, relatório sem repetição e callback uma vez cada',
+    substr($pdf, 0, 4) === '%PDF' && in_array('DejaVuSans', $names($pdf), true)
+    && $renderer->missingFonts() === [['family' => 'Roboto', 'weight' => 400, 'italic' => false], ['family' => 'Lato', 'weight' => 700, 'italic' => true]]
+    && $seen === ['Roboto/400/0', 'Lato/700/1'], json_encode([$renderer->missingFonts(), $seen]));
+$strict = new Options($tmp);
+$strict->strictFonts = true;
+$msg = '';
+try { $render([$T(['f' => 'Inter']), $T(['f' => 'Roboto']), $T(['f' => 'Lato', 'g' => 700, 'i' => 1])], $strict); } catch (Exception $e) { $msg = $e->getMessage(); }
+check('strictFonts: lança antes de desenhar, listando o que falta, sem caminhos e sem sobras', $msg === 'Missing fonts: Roboto 400, Lato 700 italic.' && !glob($tmp . '/lay_*'), $msg);
+$ok = $render([$T(['f' => 'Inter']), $T(['s' => 'sem família'])], $strict);
+check('strictFonts: não recusa quando tudo existe (nem palavras sem família)', substr($ok, 0, 4) === '%PDF' && $renderer->missingFonts() === []);
+
+// CSS do navegador gerado das mesmas fontes
+$css = FontFaces::css($opts, '/f/');
+$rules = array_values(array_filter(explode("\n", $css), fn($l) => str_starts_with($l, '@font-face')));
+preg_match_all("~font-family: '([^']+)'~", $css, $fm);
+check('FontFaces::css: uma regra por arquivo, com os nomes certos das 12 famílias', count($rules) === 56 && count(array_unique($fm[1])) === 12
+    && in_array('DM Sans', $fm[1], true) && in_array('JetBrains Mono', $fm[1], true) && in_array('Jh Serif Book', $fm[1], true) && !in_array('DM Sans 9pt', $fm[1], true)
+    && str_contains($css, "font-family: 'Inter'; font-weight: 600; font-style: normal; font-display: block; src: url('/f/inter-600.ttf') format('truetype');")
+    && str_contains($css, "font-family: 'Jh Serif'; font-weight: 700; font-style: italic;"), count($rules) . ' regras');
+$cssO = FontFaces::css($o, fn(string $file) => 'https://cdn.example/' . basename($file), 'evil');
+check('FontFaces::css: família registrada com addFont, URL por função e font-display validado',
+    str_contains($cssO, "font-family: 'Acme Sans'; font-weight: 700; font-style: normal; font-display: block; src: url('https://cdn.example/Brand_Face.ttf')") && !str_contains($cssO, 'evil'));
+$none = $tmp . '/nenhuma';
+mkdir($none);
+$q = new Options($tmp, $none);                                   // pasta de fontes vazia: só o que veio de addFont
+$q->addFont("O'Neil \\ Sans\n", 400, $brand);
+$cq = FontFaces::css($q, "/a'b/");
+check('FontFaces::css escapa aspas, barras e quebras de linha', str_contains($cq, "font-family: 'O\\'Neil \\\\ Sans'") && str_contains($cq, "url('/a\\'b/Brand_Face.ttf')") && substr_count($cq, "\n") === 2, $cq);
+copy($fontDir . '/inter-400.ttf', $tmp . '/my-font-400.ttf');
+check('FontFaces::familyName: lê o nome do TTF; se não casar com o arquivo, usa o nome do arquivo',
+    FontFaces::familyName($fontDir . '/inter-400.ttf', 'inter') === 'Inter' && FontFaces::familyName($fontDir . '/dm-sans-500.ttf', 'dm-sans') === 'DM Sans'
+    && FontFaces::familyName($tmp . '/my-font-400.ttf', 'my-font') === 'My Font');
+check('nenhum arquivo temporário sobra depois dos testes de fontes', !glob($tmp . '/lay_*'));
 
 echo $fail ? "\n$fail FALHA(S)\n" : "\nTudo certo.\n";
 exit($fail ? 1 : 0);

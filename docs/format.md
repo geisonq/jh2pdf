@@ -29,14 +29,15 @@ esquerdo** da página; cores como `"#rrggbb"` (ou `"#rgb"`); opacidades de 0 a 1
 acompanhando os cantos arredondados; senão, uma faixa por lado.
 
 ### `T` — texto (uma palavra por operação)
-`{"t":"T","x","y","w","h","s":"palavra","f":"DM Sans","g":600,"i":1,"z":23,"c":"#rrggbb","a":1,"l":0.5,"d":3}`
+`{"t":"T","x","y","w","h","s":"palavra","f":"DM Sans","fb":"Helvetica,Arial","g":600,"i":1,"z":23,"c":"#rrggbb","a":1,"l":0.5,"d":3}`
 
 | Campo | Significado |
 | --- | --- |
 | `x,y,w,h` | caixa que o navegador deu à palavra (`Range.getClientRects`) |
 | `s` | o texto (máx. 300 caracteres); já com `text-transform` aplicado |
-| `f` | família (só `[A-Za-z0-9 -]`) → `fonts/<slug>-<peso>.ttf` |
-| `g` | peso 400/500/600/700 (omitido = 400) |
+| `f` | primeira família do `font-family` (só `[A-Za-z0-9 -]`, até 60 caracteres); o servidor a procura entre as fontes registradas (`Options::addFont()` e as pastas `<slug>-<peso>[-italic].ttf`) |
+| `fb` | opcional: as famílias seguintes do `font-family` que não são genéricas (`serif`, `sans-serif`…), separadas por vírgula, até 5. O servidor usa a primeira da lista (`f`, depois `fb`) que tiver |
+| `g` | peso de 100 a 900 (omitido = 400); o servidor usa o arquivo de peso mais próximo, pelas regras do CSS |
 | `i` | 1 = itálico (inclina 12° se a família não tem itálico) |
 | `z` | tamanho da fonte em px |
 | `l` | `letter-spacing` em px (informativo; a largura final é a medida pelo navegador) |

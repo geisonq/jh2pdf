@@ -258,15 +258,26 @@ function plPseudoOps(el, which, ox, oy, ops, opacity) {
 }
 
 /* ── texto ── */
-/** Peso da fonte arredondado de 100 em 100 e limitado a 400–700 (os pesos que há em fonts/). */
+/** Peso da fonte arredondado de 100 em 100, de 100 a 900. O servidor usa o arquivo de peso mais próximo que tiver, como o CSS faz. */
 function plWeight(v) {
   const n = parseInt(v, 10);
-  return Number.isFinite(n) ? Math.max(400, Math.min(700, Math.round(n / 100) * 100)) : (v === 'bold' ? 700 : 400);
+  return Number.isFinite(n) ? Math.max(100, Math.min(900, Math.round(n / 100) * 100)) : (v === 'bold' ? 700 : 400);
 }
 
+/** Famílias genéricas do CSS: não são fontes que se tenha em arquivo, então não vão como reserva. */
+const PL_GENERIC_FAMILIES = new Set(['serif', 'sans-serif', 'monospace', 'cursive', 'fantasy', 'system-ui', 'ui-serif', 'ui-sans-serif',
+  'ui-monospace', 'ui-rounded', 'emoji', 'math', 'fangsong', '-apple-system', 'blinkmacsystemfont']);
+
+/**
+ * Fonte de um elemento: `f` é a primeira família do `font-family`; `fb`, as seguintes que não são genéricas (até 5, separadas por vírgula).
+ * O servidor usa a primeira família da pilha que tiver, como o navegador faz.
+ */
 function plFontOf(cs) {
-  const fam = (cs.fontFamily.split(',')[0] || '').replace(/["']/g, '').trim();
-  return { f: fam, g: plWeight(cs.fontWeight), i: cs.fontStyle === 'italic' || cs.fontStyle === 'oblique' ? 1 : 0, z: plR(plPx(cs.fontSize)) };
+  const list = cs.fontFamily.split(',').map((x) => x.replace(/["']/g, '').trim()).filter(Boolean);
+  const fb = list.slice(1).filter((x) => !PL_GENERIC_FAMILIES.has(x.toLowerCase())).slice(0, 5).join(',');
+  const fo = { f: list[0] || '', g: plWeight(cs.fontWeight), i: cs.fontStyle === 'italic' || cs.fontStyle === 'oblique' ? 1 : 0, z: plR(plPx(cs.fontSize)) };
+  if (fb) fo.fb = fb;
+  return fo;
 }
 
 function plTransform(s, t) {
@@ -298,6 +309,7 @@ function plTextOps(node, cs, ctx, ox, oy, ops) {
     const push = (text, r) => {
       if (r.width <= 0 || r.height <= 0) return;
       const op = { t: 'T', x: plR(r.left - ox), y: plR(r.top - oy), w: plR(r.width), h: plR(r.height), s: plTransform(text, cs.textTransform), f: fo.f, z: fo.z, c: col.c };
+      if (fo.fb) op.fb = fo.fb;
       if (fo.g !== 400) op.g = fo.g;
       if (fo.i) op.i = 1;
       if (a < 1) op.a = a;
@@ -362,7 +374,7 @@ function plListMarker(li, cs, ctx, ox, oy, ops) {
   const fo = plFontOf(mk.fontSize ? mk : cs);
   plCtx.font = `${fo.i ? 'italic ' : ''}${fo.g} ${fo.z}px "${fo.f}"`;
   const w = plCtx.measureText(label).width;
-  ops.push({ t: 'T', x: plR(left - fs * 0.3 - w), y: plR(fr.top - oy + (fr.height - fo.z * 1.25) / 2), w: plR(w), h: plR(fo.z * 1.25), s: label, f: fo.f, z: fo.z, c: col.c, ...(fo.g !== 400 ? { g: fo.g } : {}), ...(a < 1 ? { a } : {}) });
+  ops.push({ t: 'T', x: plR(left - fs * 0.3 - w), y: plR(fr.top - oy + (fr.height - fo.z * 1.25) / 2), w: plR(w), h: plR(fo.z * 1.25), s: label, f: fo.f, z: fo.z, c: col.c, ...(fo.fb ? { fb: fo.fb } : {}), ...(fo.g !== 400 ? { g: fo.g } : {}), ...(a < 1 ? { a } : {}) });
 }
 
 /* ── imagens ── */

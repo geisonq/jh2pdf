@@ -115,13 +115,14 @@ Returns `{ w, h, pages: [{ bg, ops }] }`. Waits for fonts (`document.fonts.ready
 
 | Class | Role |
 | --- | --- |
-| `Jh2Pdf\Options` | configuration: `tempDir` (**required**, writable), `fontDir`, `imageResolver`, `marksCss`, `creator`, `fallbackFont`, limits (`maxPages`, `maxOpsPerPage`, `maxOpsTotal`, `maxImages`), `memoryLimit`, `pxToPt` |
-| `Jh2Pdf\Renderer` | `render(array $layout, string $title = ''): string` returns the PDF bytes; throws `Jh2Pdf\Exception` |
+| `Jh2Pdf\Options` | configuration: `tempDir` (**required**, writable), `fontDir`, `addFont()`, `addFontDir()`, `imageResolver`, `marksCss`, `creator`, `fallbackFont`, `strictFonts`, `onMissingFont`, limits (`maxPages`, `maxOpsPerPage`, `maxOpsTotal`, `maxImages`), `memoryLimit`, `pxToPt` |
+| `Jh2Pdf\Renderer` | `render(array $layout, string $title = ''): string` returns the PDF bytes; throws `Jh2Pdf\Exception`; `missingFonts()` lists the fonts of the last render that the server did not have |
 | `Jh2Pdf\ImageResolver` | interface `load(string $src): ?string`: **you decide** where images come from |
 | `Jh2Pdf\DataUriImageResolver` | default resolver: only `data:image/...;base64,...` |
 | `Jh2Pdf\Layout` | `clean()` validates the JSON; `num()`/`color()` are safe converters |
 | `Jh2Pdf\ImageFilter` | CSS image filters with GD (usable on its own) |
-| `Jh2Pdf\Fonts`, `Images`, `Marks`, `Svg` | internal: fonts per weight, images/shadows, marks, SVG paths |
+| `Jh2Pdf\FontFaces` | `css($options, $url)` generates the browser's `@font-face` CSS from the same fonts the PDF uses |
+| `Jh2Pdf\FontIndex`, `Fonts`, `Images`, `Marks`, `Svg` | internal: the font list, font choice (CSS rules), images/shadows, marks, SVG paths |
 
 ### Images
 
@@ -145,17 +146,51 @@ In the browser, `acceptImage` avoids sending what the server would refuse.
 
 ## Fonts
 
-Dompdf cannot read woff2 or variable fonts, while browsers use variable fonts. That is why `fonts/` holds **static TTFs**, one per weight:
+For the PDF to look exactly like the screen, **the browser and the server must use the same font files**. Dompdf cannot read woff2 or variable fonts, so the server uses **static TTFs**, one per weight. There are three ways to give it fonts:
 
-```
-fonts/dm-sans-400.ttf  dm-sans-500.ttf  dm-sans-600.ttf  dm-sans-700.ttf  dm-sans-400-italic.ttf …
-        └ family (lowercase, hyphens) └ weight 400/500/600/700           └ italic, if the family has one
+- the `fonts/` folder (`Options::$fontDir`), with files named `<family>-<weight>[-italic].ttf`: `dm-sans-600.ttf`, `dm-sans-400-italic.ttf` (family in lowercase with hyphens, weight 100–900);
+- `$options->addFontDir($dir)`: another folder, same naming (use it for your own fonts);
+- `$options->addFont($family, $weight, $file, $italic)`: one file with any name; it wins over the folders.
+
+```php
+$options = new Jh2Pdf\Options('/writable/path');
+$options->addFont('Roboto', 400, '/fonts/Roboto-Regular.ttf')
+        ->addFont('Roboto', 400, '/fonts/Roboto-Italic.ttf', italic: true)
+        ->addFont('Roboto', 700, '/fonts/Roboto-Bold.ttf')
+        ->addFontDir('/more/fonts');
 ```
 
-- The browser reports the **exact family and weight** of each word; PHP uses the file for that weight. Without it, it falls back to DejaVu.
-- Families without italics (e.g. JetBrains Mono): the PDF slants the regular style 12°, as the browser does.
-- **Adding a font:** `pip install fonttools brotli` and `python tools/generate-fonts.py --fonts fonts.json --src font-source-folder --out fonts`
-  (see the script header for the `fonts.json` format). The server does not need Python.
+**How a font is chosen** (the same rules as CSS):
+
+- **Family:** the first family of the `font-family` list that the server has (`'Roboto', Arial, sans-serif` uses Roboto, or Arial if you have it; generic names such as `sans-serif` are not fonts). The browser sends up to 5 fallbacks after the first.
+- **Style:** italic if the family has an italic file; otherwise the regular style slanted 12°, as the browser does.
+- **Weight:** from 100 to 900, the closest file you have: asking for 800 with only 400 and 700 uses 700; 300 uses 400.
+
+**Make the browser use the same files.** Generate the `@font-face` CSS from the very same fonts, so there are never two lists to keep in sync:
+
+```php
+// once, when you deploy (reading the names inside the TTFs is slow to do on every request)
+file_put_contents('public/fonts.css', Jh2Pdf\FontFaces::css($options, '/fonts/'));
+```
+
+or from the command line: `php tools/fonts-css.php --dir fonts --url /fonts/ --out public/fonts.css` (installed with Composer, the script is `vendor/geisonq/jh2pdf/tools/fonts-css.php`).
+
+**Never fail silently.** A family the server does not have is drawn in `fallbackFont` (DejaVu Sans), and the PDF looks different from the screen. To catch it:
+
+```php
+$options->strictFonts = true;   // throws Jh2Pdf\Exception: "Missing fonts: Roboto 400, Roboto 700 italic."
+$options->onMissingFont = fn(string $family, int $weight, bool $italic) => error_log("Missing font: $family $weight");
+
+$pdf = $renderer->render($layout);
+$renderer->missingFonts();      // [['family' => 'Roboto', 'weight' => 400, 'italic' => false], …]
+```
+
+The check runs **before** anything is drawn. Use `strictFonts` in development and tests; in production, log with `onMissingFont` or `missingFonts()`.
+
+**Adding a font from a variable font** (e.g. Google Fonts): `pip install fonttools brotli` and `python tools/generate-fonts.py --fonts fonts.json --src font-source-folder --out fonts`
+(`--weights 300,400,700` chooses the weights; see the script header for the `fonts.json` format). It writes the right family, style and weight inside each TTF.
+To fix the names of static TTFs you already have: `python tools/generate-fonts.py --fix-names folder`. The server does not need Python.
+Check that the font's license allows embedding it in PDFs.
 
 Bundled (SIL Open Font License 1.1): Barlow Condensed, DM Sans, Fira Code, Inter, JetBrains Mono, Montserrat, Nunito, Open Sans, and four renamed serif families:
 **Jh Serif** (from Lora), **Jh Serif Text** (from Merriweather), **Jh Display** (from Playfair Display) and **Jh Serif Book** (from Source Serif 4).
@@ -219,7 +254,7 @@ It handles documents, reports, tables and slides well (see the [gallery](https:/
 - `dashed`/`dotted`/`double` borders render as solid; underline and line-through are drawn word by word (they don't run under spaces);
 - font ligatures (e.g. `=>` in JetBrains Mono becomes two characters);
 - pseudo-elements with text or counters, `::first-letter`, `<video>`, `<iframe>`. Pseudo-elements that are just an **empty box** (`content: ''` with a background, border, rounded corners or an unblurred `box-shadow`) **are drawn** when `position: absolute` or `display: block`;
-- weights outside 400–700 (rounded to the nearest);
+- fractional weights of variable fonts (450 is rounded to 500), and fonts without a static TTF on the server (they fall back to DejaVu; see [Fonts](#fonts));
 - automatic pagination: each item in `pages` is one page; anything taller is cut off.
 
 These make good contributions: each one becomes a new operation in the JSON (see [Contributing](#contributing)). The full table is in [docs › Supported CSS](https://geisonq.github.io/jh2pdf/docs/#css).
@@ -241,6 +276,7 @@ jh2pdf/
 ├── docs/format.md        the operations format (the "contract" between JS and PHP)
 ├── demo/                 examples gallery (open demo/index.html through a PHP server)
 ├── examples/minimal/     minimal example (HTML + PHP endpoint)
+├── tools/fonts-css.php   generates the browser's @font-face CSS from the same fonts
 ├── tools/generate-fonts.py   generates the TTFs from variable fonts
 └── tests/run.php         tests (php tests/run.php or composer test)
 ```

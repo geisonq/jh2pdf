@@ -21,8 +21,25 @@ final class Options
     /** Metadado "Creator" do PDF. */
     public string $creator = 'Jh2Pdf';
 
-    /** Fonte usada quando a família pedida não existe em `fontDir` (acompanha o Dompdf). */
+    /** Fonte usada quando a família pedida não existe (acompanha o Dompdf). Veja também `strictFonts`. */
     public string $fallbackFont = 'DejaVu Sans';
+
+    /**
+     * true = em vez de trocar em silêncio por `fallbackFont`, `Renderer::render()` lança `Jh2Pdf\Exception` ("Missing fonts: Roboto 400, …")
+     * ANTES de desenhar qualquer coisa. Recomendado em desenvolvimento: uma fonte esquecida vira erro visível, não um PDF diferente da tela.
+     */
+    public bool $strictFonts = false;
+
+    /**
+     * Chamado uma vez por fonte que faltou (família, peso, itálico), antes de desenhar. Serve para registrar no log.
+     * @var (callable(string $family, int $weight, bool $italic): void)|null
+     */
+    public $onMissingFont = null;
+
+    /** @var array<int,array{family:string,weight:int,italic:bool,file:string}> */
+    private array $fontFiles = [];
+    /** @var string[] */
+    private array $fontDirs = [];
 
     /** Limites: o JSON vem do navegador e não pode pedir trabalho sem fim. */
     public int $maxPages = 1000;
@@ -42,5 +59,42 @@ final class Options
     {
         $this->tempDir = $tempDir;
         $this->fontDir = $fontDir ?? dirname(__DIR__) . '/fonts';
+    }
+
+    /**
+     * Registra um TTF estático para uma família, peso e estilo, com o nome de arquivo que você quiser.
+     * `$family` é o nome que o CSS usa (`font-family: 'Roboto'`); `$weight` vai de 100 a 900 (múltiplos de 100).
+     * Vale mais que os arquivos das pastas. O que continuar faltando é tratado por `fallbackFont`, `strictFonts` e `onMissingFont`.
+     */
+    public function addFont(string $family, int $weight, string $file, bool $italic = false): static
+    {
+        $family = trim($family);
+        if (FontIndex::slug($family) === '') throw new Exception('addFont: the family name needs letters or numbers.');
+        if ($weight < 100 || $weight > 900 || $weight % 100 !== 0) throw new Exception('addFont: the weight must be 100, 200, … 900.');
+        if (strtolower(pathinfo($file, PATHINFO_EXTENSION)) !== 'ttf' || !is_file($file) || !is_readable($file)) {
+            throw new Exception("addFont: '$family' $weight needs an existing, readable static .ttf file.");
+        }
+        $this->fontFiles[] = ['family' => $family, 'weight' => $weight, 'italic' => $italic, 'file' => $file];
+        return $this;
+    }
+
+    /** Mais uma pasta de TTF no padrão `<familia>-<peso>[-italic].ttf` (além de `fontDir`). */
+    public function addFontDir(string $dir): static
+    {
+        if (!is_dir($dir)) throw new Exception('addFontDir: the directory does not exist.');
+        $this->fontDirs[] = $dir;
+        return $this;
+    }
+
+    /** @return array<int,array{family:string,weight:int,italic:bool,file:string}>  o que foi registrado com addFont() */
+    public function fontFiles(): array
+    {
+        return $this->fontFiles;
+    }
+
+    /** @return string[]  `fontDir` e as pastas de addFontDir(), nessa ordem */
+    public function allFontDirs(): array
+    {
+        return array_merge([$this->fontDir], $this->fontDirs);
     }
 }

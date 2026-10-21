@@ -253,7 +253,7 @@ $options = <span class="k">new</span> Jh2Pdf\<span class="f">Options</span>(<spa
 <table>
   <thead><tr><th>Class</th><th>Role</th></tr></thead>
   <tbody>
-    <tr><td><code>Renderer</code></td><td><code>__construct(Options $o)</code> · <code>render(array $layout, string $title = ''): string</code>. Returns the PDF bytes and throws <code>Jh2Pdf\Exception</code> on failure.</td></tr>
+    <tr><td><code>Renderer</code></td><td><code>__construct(Options $o)</code> · <code>render(array $layout, string $title = ''): string</code> returns the PDF bytes and throws <code>Jh2Pdf\Exception</code> on failure · <code>missingFonts()</code> lists the fonts of the last render that the server did not have.</td></tr>
     <tr><td><code>Options</code></td><td>Configuration. Only <code>tempDir</code> is required (see <a href="#options">Options</a>).</td></tr>
     <tr><td><code>ImageResolver</code></td><td>Interface <code>load(string $src): ?string</code>. You decide where images come from; return <code>null</code> to refuse.</td></tr>
     <tr><td><code>DataUriImageResolver</code></td><td>Default resolver. Only accepts <code>data:image/(png|jpeg|gif|webp);base64,…</code>, up to 12 MB (<code>__construct(int $maxBytes)</code>).</td></tr>
@@ -261,7 +261,9 @@ $options = <span class="k">new</span> Jh2Pdf\<span class="f">Options</span>(<spa
     <tr><td><code>Layout</code></td><td><code>clean(array, ?Options)</code> validates the JSON · <code>num($v, $min, $max)</code> and <code>color($v)</code> are safe converters · <code>OPS = 'RBTILMCE'</code>.</td></tr>
     <tr><td><code>ImageFilter</code></td><td><code>apply(string $dataUri, string $filter, …): ?string</code> applies CSS filters with GD. Usable on its own.</td></tr>
     <tr><td><code>Images</code></td><td>Internal: resolves, filters, downsizes (<code>shrink</code>) and renders shadows (<code>shadow</code>). <code>dimensionsOk()</code> validates the header before decoding.</td></tr>
-    <tr><td><code>Fonts</code></td><td>Internal: registers one TTF per family and weight in Dompdf; synthetic italic when the family has none.</td></tr>
+    <tr><td><code>FontFaces</code></td><td><code>css(Options $o, string|callable $url = '', string $display = 'block'): string</code> generates the browser's <code>@font-face</code> CSS from the same fonts the PDF uses.</td></tr>
+    <tr><td><code>FontIndex</code></td><td>Internal: the list of fonts the server has (<code>addFont</code> + folders), the single source for the PDF and for <code>FontFaces</code>.</td></tr>
+    <tr><td><code>Fonts</code></td><td>Internal: chooses the file per family, style and weight (CSS rules) and registers it in Dompdf; synthetic italic when the family has none.</td></tr>
     <tr><td><code>Marks</code>, <code>Svg</code></td><td>Internal: read the mark drawings (SVG inside CSS) and flatten SVG paths into polygons.</td></tr>
   </tbody>
 </table>
@@ -271,11 +273,15 @@ $options = <span class="k">new</span> Jh2Pdf\<span class="f">Options</span>(<spa
   <thead><tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
   <tbody>
     <tr><td><code>tempDir</code></td><td>string</td><td>—</td><td><strong>Required</strong> (1st constructor argument). Writable directory: Dompdf font cache and temporary images.</td></tr>
-    <tr><td><code>fontDir</code></td><td>string</td><td>the library's <code>fonts/</code></td><td>Directory of static TTFs (2nd constructor argument).</td></tr>
+    <tr><td><code>fontDir</code></td><td>string</td><td>the library's <code>fonts/</code></td><td>Directory of static TTFs named <code>&lt;family&gt;-&lt;weight&gt;[-italic].ttf</code> (2nd constructor argument).</td></tr>
+    <tr><td><code>addFont($family, $weight, $file, $italic)</code></td><td>method</td><td>—</td><td>Registers one static TTF for a family, a weight (100–900) and a style, with any file name. Wins over the folders. Returns <code>$this</code>.</td></tr>
+    <tr><td><code>addFontDir($dir)</code></td><td>method</td><td>—</td><td>Another folder of TTFs named <code>&lt;family&gt;-&lt;weight&gt;[-italic].ttf</code>. Returns <code>$this</code>.</td></tr>
     <tr><td><code>imageResolver</code></td><td>?ImageResolver</td><td><code>DataUriImageResolver</code></td><td>Where images come from.</td></tr>
     <tr><td><code>marksCss</code></td><td>?string</td><td><code>resources/marks.css</code></td><td>CSS file with the hand-drawn mark shapes.</td></tr>
     <tr><td><code>creator</code></td><td>string</td><td><code>'Jh2Pdf'</code></td><td>PDF "Creator" metadata.</td></tr>
-    <tr><td><code>fallbackFont</code></td><td>string</td><td><code>'DejaVu Sans'</code></td><td>Font used when the family does not exist in <code>fontDir</code>.</td></tr>
+    <tr><td><code>fallbackFont</code></td><td>string</td><td><code>'DejaVu Sans'</code></td><td>Font used when no family of the <code>font-family</code> list exists on the server. See <code>strictFonts</code>.</td></tr>
+    <tr><td><code>strictFonts</code></td><td>bool</td><td><code>false</code></td><td>Throws <code>Jh2Pdf\Exception</code> (<code>Missing fonts: Roboto 400.</code>) before drawing, instead of silently using <code>fallbackFont</code>. Recommended in development.</td></tr>
+    <tr><td><code>onMissingFont</code></td><td>?callable</td><td><code>null</code></td><td>Called once per missing font with <code>($family, $weight, $italic)</code>, before drawing. Use it to log.</td></tr>
     <tr><td><code>maxPages</code></td><td>int</td><td>1000</td><td>Pages beyond this are dropped.</td></tr>
     <tr><td><code>maxOpsPerPage</code></td><td>int</td><td>60,000</td><td>Operations per page.</td></tr>
     <tr><td><code>maxOpsTotal</code></td><td>int</td><td>400,000</td><td>Operations in the whole document.</td></tr>
@@ -299,7 +305,7 @@ $options = <span class="k">new</span> Jh2Pdf\<span class="f">Options</span>(<spa
   <tbody>
     <tr><td><code>R</code></td><td>filled rectangle</td><td><code>x y w h c a r[4]</code></td></tr>
     <tr><td><code>B</code></td><td>borders</td><td><code>x y w h s[4]=[width,color,a]</code> (top, right, bottom, left) <code>r[4]</code></td></tr>
-    <tr><td><code>T</code></td><td>text (one word)</td><td><code>x y w h s f g i z c a l d</code> (d: 1 underline, 2 line-through)</td></tr>
+    <tr><td><code>T</code></td><td>text (one word)</td><td><code>x y w h s f fb g i z c a l d</code> (<code>fb</code>: fallback families of the <code>font-family</code> list; <code>g</code>: weight 100–900; d: 1 underline, 2 line-through)</td></tr>
     <tr><td><code>I</code></td><td>image</td><td><code>x y w h u k[4] f a r[4]</code> (<code>u</code> = src, <code>k</code> = clip box, <code>f</code> = CSS filter)</td></tr>
     <tr><td><code>M</code></td><td>hand-drawn mark</td><td><code>m v x y w h c z</code></td></tr>
     <tr><td><code>L</code></td><td>line</td><td><code>x y x2 y2 c w a</code></td></tr>
@@ -314,7 +320,7 @@ $options = <span class="k">new</span> Jh2Pdf\<span class="f">Options</span>(<spa
 <table>
   <thead><tr><th>Feature</th><th>Status</th><th>Details</th></tr></thead>
   <tbody>
-    <tr><td>Text: family, weight 400–700, italic, size, color, opacity</td><td class="yes">Yes</td><td>Weights outside 400–700 are rounded. Families without italic are slanted 12°, as the browser does.</td></tr>
+    <tr><td>Text: family (with fallbacks), weight 100–900, italic, size, color, opacity</td><td class="yes">Yes</td><td>Uses the closest weight you have, as CSS does. Families without italic are slanted 12°, as the browser does. Needs a static TTF on the server: see <a href="#fonts">Fonts</a>.</td></tr>
     <tr><td><code>text-transform</code>, <code>letter-spacing</code></td><td class="yes">Yes</td><td>The final width is always the one measured by the browser.</td></tr>
     <tr><td><code>text-decoration</code> (underline, line-through)</td><td class="part">Partial</td><td>The line is drawn word by word (it does not run under spaces). Decoration color and style are ignored.</td></tr>
     <tr><td><code>background-color</code>, <code>border-radius</code> (per corner)</td><td class="yes">Yes</td><td></td></tr>
@@ -353,22 +359,45 @@ $options = <span class="k">new</span> Jh2Pdf\<span class="f">Options</span>(<spa
 
 <!-- ───────────────────────── -->
 <h2 id="fonts">Fonts</h2>
-<p>Dompdf cannot read woff2 or variable fonts. That is why <code>fonts/</code> holds <strong>static TTFs, one per weight</strong>:</p>
-<pre><code>fonts/dm-sans-400.ttf   dm-sans-500.ttf   dm-sans-600.ttf   dm-sans-700.ttf   dm-sans-400-italic.ttf …
-      └ lowercase hyphenated family        └ weight 400/500/600/700            └ italic, if available</code></pre>
+<p>For the PDF to look exactly like the screen, <strong>the browser and the server must use the same font files</strong>. Dompdf cannot read woff2 or variable fonts, so the server uses <strong>static TTFs, one per weight</strong>. There are three ways to give it fonts:</p>
+<table>
+  <thead><tr><th>Way</th><th>When to use it</th></tr></thead>
+  <tbody>
+    <tr><td><code>fonts/</code> folder (<code>Options::$fontDir</code>)</td><td>files named <code>&lt;family&gt;-&lt;weight&gt;[-italic].ttf</code>: <code>dm-sans-600.ttf</code>, <code>dm-sans-400-italic.ttf</code> (family in lowercase with hyphens, weight 100–900)</td></tr>
+    <tr><td><code>$options-&gt;addFontDir($dir)</code></td><td>another folder with the same naming; use it for your own fonts and keep the bundled ones</td></tr>
+    <tr><td><code>$options-&gt;addFont($family, $weight, $file, $italic)</code></td><td>one file with any name; it wins over the folders</td></tr>
+  </tbody>
+</table>
+<pre><code>$options = <span class="k">new</span> Jh2Pdf\Options(<span class="s">'/writable/path'</span>);
+$options-&gt;addFont(<span class="s">'Roboto'</span>, 400, <span class="s">'/fonts/Roboto-Regular.ttf'</span>)
+        -&gt;addFont(<span class="s">'Roboto'</span>, 400, <span class="s">'/fonts/Roboto-Italic.ttf'</span>, italic: <span class="k">true</span>)
+        -&gt;addFont(<span class="s">'Roboto'</span>, 700, <span class="s">'/fonts/Roboto-Bold.ttf'</span>)
+        -&gt;addFontDir(<span class="s">'/more/fonts'</span>);</code></pre>
+<h3>How a font is chosen</h3>
+<p>The same rules as CSS:</p>
 <ul>
-  <li>The browser reports the family (the <strong>first</strong> one in <code>font-family</code>) and the weight of each word. PHP uses the matching file;
-    if it does not exist, it falls back to DejaVu Sans and the text comes out in a different font.</li>
-  <li><strong>The screen must use the same file.</strong> Declare an <code>@font-face</code> with the same family name pointing to the TTFs
-    (see <code>demo/fonts.css</code>). If the browser measures with a different font, the word widths won't match.</li>
-  <li>Bundled (12 families, SIL OFL 1.1): Barlow Condensed, DM Sans, Fira Code, Inter, JetBrains Mono, Montserrat, Nunito, Open Sans, and four renamed serif families:
-    Jh Serif (from Lora), Jh Serif Text (from Merriweather), Jh Display (from Playfair Display) and Jh Serif Book (from Source Serif 4). With italics: DM Sans and Jh Serif.</li>
+  <li><strong>Family:</strong> the first family of the <code>font-family</code> list that the server has (<code>'Roboto', Arial, sans-serif</code> uses Roboto, or Arial if you have it; generic names such as <code>sans-serif</code> are not fonts). The browser sends up to 5 fallbacks after the first.</li>
+  <li><strong>Style:</strong> italic if the family has an italic file; otherwise the regular style slanted 12°, as the browser does.</li>
+  <li><strong>Weight:</strong> from 100 to 900, the closest file you have: asking for 800 with only 400 and 700 uses 700; 300 uses 400.</li>
 </ul>
-<h3>Adding a font</h3>
+<h3>Make the browser use the same files</h3>
+<p>Generate the <code>@font-face</code> CSS from the very same fonts, so there are never two lists to keep in sync:</p>
+<pre><code><span class="c">// once, when you deploy (reading the names inside the TTFs is slow to do on every request)</span>
+file_put_contents(<span class="s">'public/fonts.css'</span>, Jh2Pdf\FontFaces::css($options, <span class="s">'/fonts/'</span>));</code></pre>
+<p>or from the command line: <code>php tools/fonts-css.php --dir fonts --url /fonts/ --out public/fonts.css</code> With Composer, the script is <code>vendor/geisonq/jh2pdf/tools/fonts-css.php</code>.</p>
+<h3>Never fail silently</h3>
+<p>A family the server does not have is drawn in <code>fallbackFont</code> (DejaVu Sans), and the PDF looks different from the screen. To catch it:</p>
+<pre><code>$options-&gt;strictFonts = <span class="k">true</span>;   <span class="c">// throws Jh2Pdf\Exception: "Missing fonts: Roboto 400, Roboto 700 italic."</span>
+$options-&gt;onMissingFont = <span class="k">fn</span>(<span class="k">string</span> $family, <span class="k">int</span> $weight, <span class="k">bool</span> $italic) =&gt; error_log("Missing font: $family $weight");
+
+$pdf = $renderer-&gt;render($layout);
+$renderer-&gt;missingFonts();      <span class="c">// [['family' =&gt; 'Roboto', 'weight' =&gt; 400, 'italic' =&gt; false], …]</span></code></pre>
+<p>The check runs <strong>before</strong> anything is drawn. Use <code>strictFonts</code> in development and tests; in production, log with <code>onMissingFont</code> or <code>missingFonts()</code>.</p>
+<h3>Adding a font from a variable font</h3>
 <pre><code>pip install fonttools brotli
 python tools/generate-fonts.py --fonts fonts.json --src font-source-folder --out fonts</code></pre>
-<p>The <code>fonts.json</code> format is described in the script header. Python is only needed to generate the files; the server uses the ready-made TTFs.
-  If the font already ships static TTFs, just copy them using the naming pattern above.</p>
+<p>Python is only needed to generate files (<code>--weights 300,400,700</code> chooses the weights; the <code>fonts.json</code> format is in the script header). It writes the right family, style and weight inside each TTF. To fix the names of static TTFs you already have: <code>python tools/generate-fonts.py --fix-names folder</code>. The server uses the ready-made TTFs. Check that the font's license allows embedding it in PDFs.</p>
+<p>Bundled (12 families, SIL OFL 1.1): Barlow Condensed, DM Sans, Fira Code, Inter, JetBrains Mono, Montserrat, Nunito, Open Sans, and four renamed serif families: Jh Serif (from Lora), Jh Serif Text (from Merriweather), Jh Display (from Playfair Display) and Jh Serif Book (from Source Serif 4). With italics: DM Sans and Jh Serif.</p>
 
 <!-- ───────────────────────── -->
 <h2 id="images">Images</h2>
@@ -407,7 +436,7 @@ $options-&gt;imageResolver = <span class="k">new</span> <span class="f">MyResolv
   <tbody>
     <tr><td>Injecting HTML, JS or CSS into text</td><td>Text goes into the PDF as glyphs (hex-encoded) and is never interpreted.</td></tr>
     <tr><td>Injecting PDF objects (<code>/JS</code>, <code>/OpenAction</code>, <code>/URI</code>, <code>/Launch</code>)</td><td>Hex-encoded text, escaped title, and no action or annotation objects are created. There is a test for this.</td></tr>
-    <tr><td>Font name with <code>../</code>, <code>)</code> or a null byte</td><td>Reduced to <code>[A-Za-z0-9 -]</code> (60 characters) and mapped only to files in <code>fontDir</code>.</td></tr>
+    <tr><td>Font name with <code>../</code>, <code>)</code> or a null byte</td><td>Reduced to <code>[A-Za-z0-9 -]</code> (60 characters; at most 5 fallback families) and looked up only among the fonts you registered. Paths come from your configuration, never from the JSON.</td></tr>
     <tr><td>Reading local files or making requests (<code>file://</code>, <code>http://</code>, <code>../</code>)</td><td>Images only go through the <code>ImageResolver</code>. Dompdf runs with <code>isRemoteEnabled</code>, PHP and JS disabled, plus a <code>chroot</code>.</td></tr>
     <tr><td>Image bomb (a tiny PNG declaring millions of pixels)</td><td>The header is read before decoding: side ≤ 20,000 px and ≤ 25 megapixels.</td></tr>
     <tr><td>Exhausting CPU or memory</td><td>Limits on pages, operations, images and nested clips (≤ 32), caps on shadows and blurs, <code>set_time_limit(180)</code>.</td></tr>
@@ -449,8 +478,8 @@ $options-&gt;imageResolver = <span class="k">new</span> <span class="f">MyResolv
 <table>
   <thead><tr><th>Symptom</th><th>Likely cause and fix</th></tr></thead>
   <tbody>
-    <tr><td>Text in a different font than on screen</td><td>There is no <code>fonts/&lt;family&gt;-&lt;weight&gt;.ttf</code> for the first family in <code>font-family</code>. Add the TTF or use a bundled one.</td></tr>
-    <tr><td>Words squeezed or spaced out</td><td>The browser measured with another font (the fallback or a system font). Load the same font with <code>@font-face</code>.</td></tr>
+    <tr><td>Text in a different font than on screen</td><td>The server has no static TTF for any family of the <code>font-family</code> list, so it used <code>fallbackFont</code>. Add the font (see <a href="#fonts">Fonts</a>); <code>strictFonts</code> or <code>missingFonts()</code> tell you which ones are missing.</td></tr>
+    <tr><td>Words squeezed or spaced out</td><td>The browser measured with another font (the fallback or a system font). Load the same files with <code>@font-face</code>: generate it with <code>FontFaces::css()</code>.</td></tr>
     <tr><td>Image does not appear</td><td>The <code>src</code> is not <code>data:</code> and there is no <code>ImageResolver</code>, or the resolver returned <code>null</code>, or the image exceeded the limits.</td></tr>
     <tr><td>Content cut off at the bottom of the page</td><td>There is no automatic pagination. Split into more pages.</td></tr>
     <tr><td>Your app's styles "leak" into the page</td><td>The container inherits from <code>&lt;body&gt;</code>. Scope the page CSS and set font, color and <code>line-height</code> on the root.</td></tr>
@@ -515,6 +544,7 @@ $options-&gt;imageResolver = <span class="k">new</span> <span class="f">MyResolv
 ├── demo/                 examples gallery (index.html, pages.css, fonts.css, pdf.php)
 ├── examples/minimal/     the smallest complete example
 ├── tests/run.php         tests (php tests/run.php or composer test)
+├── tools/fonts-css.php   generates the browser's @font-face CSS from the same fonts
 └── tools/generate-fonts.py   generates the TTFs from variable fonts</code></pre>
 
 <!-- ───────────────────────── -->

@@ -20,8 +20,21 @@ final class Renderer
     /** Aninhamento máximo de recortes (C/E) por página. */
     private const MAX_CLIP_DEPTH = 32;
 
+    /** @var array<int,array{family:string,weight:int,italic:bool}> */
+    private array $missing = [];
+
     public function __construct(private Options $o)
     {
+    }
+
+    /**
+     * Fontes que o JSON pediu e o servidor não tem (família, peso 100–900, itálico), do último {@see render()}.
+     * Essas palavras saíram na fonte de reserva (`Options::$fallbackFont`), a não ser que `strictFonts` tenha recusado o PDF.
+     * @return array<int,array{family:string,weight:int,italic:bool}>
+     */
+    public function missingFonts(): array
+    {
+        return $this->missing;
     }
 
     /**
@@ -34,10 +47,19 @@ final class Renderer
         if (!class_exists(Dompdf::class)) throw new Exception('Dompdf is not installed (composer require dompdf/dompdf).');
         if ($this->o->tempDir === '' || !is_dir($this->o->tempDir) || !is_writable($this->o->tempDir)) throw new Exception('Options::$tempDir must be an existing writable directory.');
         @set_time_limit(180);
+        $this->missing = [];
         $this->raiseMemoryLimit();
         $this->collectGarbage();
         $lay = Layout::clean($layout, $this->o);
         if (!$lay['pages']) throw new Exception('No pages received.');
+        $index = new FontIndex($this->o);
+        $this->missing = $this->findMissingFonts($lay, $index);                       // antes de desenhar: no modo estrito nada é gasto à toa
+        foreach ($this->missing as $m) {
+            if (is_callable($this->o->onMissingFont)) ($this->o->onMissingFont)($m['family'], $m['weight'], $m['italic']);
+        }
+        if ($this->o->strictFonts && $this->missing) {
+            throw new Exception('Missing fonts: ' . implode(', ', array_map(fn($m) => $m['family'] . ' ' . $m['weight'] . ($m['italic'] ? ' italic' : ''), $this->missing)) . '.');
+        }
         $k = $this->o->pxToPt;
         $W = $lay['w'] * $k;
         $H = $lay['h'] * $k;
@@ -58,7 +80,7 @@ final class Renderer
         if ($title !== '') $canvas->add_info('Title', $title);
         $canvas->add_info('Creator', $this->o->creator);
 
-        $fonts = new Fonts($fm, $this->o);
+        $fonts = new Fonts($fm, $this->o, $index);
         $images = new Images($this->o);
         $svgs = (new Marks($this->o->marksCss))->shapes();
         $fillRect = function (float $x, float $y, float $w, float $h, array $rgb, float $a, array $r = []) use ($canvas, $k) {
@@ -125,6 +147,37 @@ final class Renderer
         return $out;
     }
 
+    /** Peso pedido por uma operação de texto: 1–1000 (o JSON é hostil; qualquer outra coisa vira 400, ou 700 com o antigo `b`). */
+    private static function weightOf(array $op): int
+    {
+        $g = Layout::num($op['g'] ?? (!empty($op['b']) ? 700 : 400), 0, 1000);
+        return $g >= 1 ? (int)round($g) : 400;
+    }
+
+    /**
+     * Fontes pedidas pelas palavras do layout que o servidor não tem (nenhuma família da pilha existe).
+     * Palavras sem família (`f` ausente) usam `fallbackFont` de propósito e não contam.
+     * @return array<int,array{family:string,weight:int,italic:bool}>
+     */
+    private function findMissingFonts(array $lay, FontIndex $index): array
+    {
+        $seen = $out = [];
+        foreach ($lay['pages'] as $page) {
+            foreach ($page['ops'] as $op) {
+                if (($op['t'] ?? '') !== 'T') continue;
+                [$fam, $rest] = Fonts::stack($op, '');
+                if ($fam === '' || $index->hasAny($fam, $rest)) continue;
+                $weight = max(100, min(900, (int)(round(self::weightOf($op) / 100) * 100)));
+                $italic = !empty($op['i']);
+                $key = FontIndex::slug($fam) . '|' . $weight . '|' . (int)$italic;
+                if (isset($seen[$key])) continue;
+                $seen[$key] = true;
+                $out[] = ['family' => $fam, 'weight' => $weight, 'italic' => $italic];
+            }
+        }
+        return $out;
+    }
+
     /** Sobe o memory_limit para o mínimo pedido (nunca baixa o que o servidor já deu). */
     private function raiseMemoryLimit(): void
     {
@@ -178,9 +231,9 @@ final class Renderer
         $text = is_string($op['s'] ?? null) ? mb_substr($op['s'], 0, 300) : '';
         if ($text === '') return;
         $size = Layout::num($op['z'] ?? 16, 1, 600) * $k;
-        $fam = is_string($op['f'] ?? null) ? mb_substr((string)preg_replace('/[^A-Za-z0-9 \-]/', '', $op['f']), 0, 60) : $this->o->fallbackFont;
+        [$fam, $fallbacks] = Fonts::stack($op, $this->o->fallbackFont);
         $slant = false;
-        $font = $fonts->resolve($fam, (int)($op['g'] ?? (!empty($op['b']) ? 700 : 400)), !empty($op['i']), $slant);
+        $font = $fonts->resolve($fam, self::weightOf($op), !empty($op['i']), $slant, $fallbacks);
         $cpdf->selectFont($font, '', true, true);
         $fh = $cpdf->getFontHeight($size);
         $desc = -$cpdf->getFontDescender($size);

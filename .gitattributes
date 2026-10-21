@@ -3,7 +3,7 @@
 *.pdf binary
 *.png binary
 
-# Fora do pacote do Composer (dist): site, galeria, documentação e testes ficam só no repositório
+# Not in the Composer package (dist): site, gallery, docs and tests live only in the repository (tools/ ships: fonts-css.php is useful there)
 /.gitattributes   export-ignore
 /.gitignore       export-ignore
 /.nojekyll        export-ignore
@@ -12,7 +12,8 @@
 /docs             export-ignore
 /examples         export-ignore
 /tests            export-ignore
-/tools            export-ignore
 /index.html       export-ignore
 /index.pt-BR.html export-ignore
 /index.es.html    export-ignore
+/sitemap.xml      export-ignore
+/google*.html     export-ignore
